@@ -77,6 +77,14 @@ public class List <T> {
         }
     }
 
+    // Adds the other list at the end
+    public void addAll (List<T> arr) {
+        arr.head.prev = tail;
+        tail.next = arr.head;
+        tail = arr.tail;
+        size += arr.size();
+    }
+
     // Remove the tail
     public T remove () {
         if (tail == null) {
@@ -96,14 +104,16 @@ public class List <T> {
         return value;
     }
 
+    // Find and remove a specific value
     public T remove (T value) {
         Node<T> returnNode = head;
         for (int i = 0; i < size(); i++) {
             if (returnNode.next == null) {
+                return null;
                 // throw new RunTimeException (String.format("List index out of range at [%i]", i+1));
             }
             if (returnNode.value == value) {
-                //
+                
             }
             returnNode = returnNode.next;
         }
@@ -118,17 +128,42 @@ public class List <T> {
     }
 
     public T removeAtIndex (int index) {
+        if (index < 0) {
+            return null;
+        }
+
         if (isEmpty()) {
             return null;
         }
+
+        if (index == size() -1) {
+            return remove();
+        }
+
         Node<T> returnNode = head;
+        if (index == 0) {
+            if (returnNode.next == null) {
+                head = null;
+                tail = null;
+                size -=1;
+                return returnNode.value;
+            }
+            else {
+                head = returnNode.next;
+                head.prev = null;
+                size -=1;
+                return returnNode.value;
+            }
+        }
         for (int i = 0; i < index; i++) {
             if (returnNode.next == null) {
                 // throw new RunTimeException (String.format("List index out of range at [%i]", i+1));
+                return null;
             }
             returnNode = returnNode.next;
         }
         if (returnNode.next != null) {
+            returnNode.next.prev = returnNode.prev;
             returnNode.prev.next = returnNode.next;
         }
         else {

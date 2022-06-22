@@ -1,8 +1,6 @@
 package src.com.revature.test;
 
-import static org.junit.Assert.assertSame;
 // Junit imports
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.*;
 
@@ -41,6 +39,18 @@ public class UtilsTesting {
         assertEquals(3, testList.get(2));
         assertEquals(10, testList.get(3));
         assertEquals(7, testList.get(4));
+    }
+
+    @Test
+    public void ListAddTwoLists () {
+        List<Integer> testList = new List<Integer>(new Integer[]{1,2,3,4});
+        List<Integer> testList2 = new List<Integer>(new Integer[]{5,6,7,8,9,10});
+        testList.addAll (testList2);
+        assertEquals(1, testList.get(0));
+        assertEquals(2, testList.get(1));
+        assertEquals(5, testList.get(4));
+        assertEquals(6, testList.get(5));
+        assertEquals("{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}", testList.toString());
     }
 
     @Test
@@ -117,6 +127,12 @@ public class UtilsTesting {
         assertEquals("{1, 2, 5}", testList.toString());
         assertEquals(2, testList.get(1));
 
+        // Test out of range
+        removedInt = testList.removeAtIndex(7);
+        assertEquals(null, removedInt);
+        removedInt = testList.removeAtIndex(-2);
+        assertEquals(null, removedInt);
+
         removedInt = testList.removeAtIndex(1);
         assertEquals(2, removedInt);
 
@@ -124,7 +140,7 @@ public class UtilsTesting {
         assertEquals(1, removedInt);
         assertEquals(1, testList.size());
         assertEquals("{5}", testList.toString());
-        assertEquals(1, testList.get(0));
+        assertEquals(5, testList.get(0));
 
         removedInt = testList.removeAtIndex(0);
         assertEquals(5, removedInt);
