@@ -1,4 +1,4 @@
-package src.com.revature.courseapp.utils;
+package src.main.java.com.revature.courseapp.utils;
 
 public class KeyNode <K, V> {
     final int hashValue;

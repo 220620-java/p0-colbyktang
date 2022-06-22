@@ -1,9 +1,11 @@
-package src.com.revature.courseapp.user;
+package src.test.java.com.revature;
 
 // Junit imports
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.*;
+
+import src.main.java.com.revature.courseapp.user.*;
 
 public class UserTest {
     

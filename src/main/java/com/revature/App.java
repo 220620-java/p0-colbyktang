@@ -1,3 +1,6 @@
+package src.main.java.com.revature;
+import java.util.Scanner;
+
 /*
  * Minimum features
  * Use of custom data structures (do not use java.util Collection types!)
@@ -29,12 +32,7 @@
     - view the classes that I have registered for
  */
 
-package src.com.revature.courseapp.main;
-import java.util.Scanner;
-
-import src.com.revature.courseapp.user.Student;
-
-public class Main {
+public class App {
     public static void main (String[] args) {
         System.out.println(
             "Welcome to Course Registration by Colby Tang!"
@@ -89,4 +87,3 @@ public class Main {
         System.out.println("3. Exit");
     }
 }
-

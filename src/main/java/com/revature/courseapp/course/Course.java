@@ -1,6 +1,6 @@
-package src.com.revature.courseapp.course;
+package src.main.java.com.revature.courseapp.course;
 
-import src.com.revature.courseapp.user.Student;
+import src.main.java.com.revature.courseapp.user.Student;
 
 public class Course {
     protected String courseId;

@@ -10,9 +10,9 @@
  * - view the classes that I have registered for
  */
 
-package src.com.revature.courseapp.user;
+package src.main.java.com.revature.courseapp.user;
 
-import src.com.revature.courseapp.course.Course;
+import src.main.java.com.revature.courseapp.course.Course;
 
 
 public class Student extends User {

@@ -1,4 +1,4 @@
-package src.com.revature.courseapp.course;
+package src.test.java.com.revature;
 
 import org.junit.jupiter.api.Test;
 
