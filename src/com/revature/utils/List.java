@@ -1,0 +1,156 @@
+package src.com.revature.utils;
+
+import java.lang.Exception;
+import java.lang.RuntimeException;
+
+public class List <T> {
+    Node<T> head;
+    Node<T> tail;
+    int size;
+
+    public List () {}
+
+    public List (T[] arr) {
+        for (T item : arr) {
+            add(item);
+        }
+    }
+
+    public int size() {
+        return size;
+    }
+
+    public boolean isEmpty() {
+        return size <= 0;
+    }
+
+    // Retrieve a value at the index
+    public T get (int index) {
+        if (isEmpty()) {
+            return null;
+        }
+        if (index == size() - 1) {
+            return tail.value;
+        }
+        Node<T> returnNode = head;
+        for (int i = 0; i < index; i++) {
+            if (returnNode.next == null) {
+                // throw new RunTimeException (String.format("List index out of range at [%i]", i+1));
+            }
+            returnNode = returnNode.next;
+        }
+        return returnNode.value;
+    }
+
+    // Change a value at an index
+    public void set (int index, T value) {
+        Node<T> returnNode = head;
+        for (int i = 0; i < index; i++) {
+            if (returnNode.next == null) {
+                // throw new RunTimeException (String.format("List index out of range at [%i]", i+1));
+            }
+            returnNode = returnNode.next;
+        }
+        returnNode.value = value;
+    }
+
+    // Add new node at the end
+    public void add (T value) {
+        if (head == null) {
+            head = new Node<T>(value);
+            tail = head;
+            size += 1;
+            return;
+        }
+        else if (head.next == null) {
+            tail.next = new Node<T>(value);
+            tail.next.prev = tail;
+            tail = tail.next;
+            head.next = tail;
+            size += 1;
+        }
+        else {
+            tail.next = new Node<T>(value);
+            tail.next.prev = tail;
+            tail = tail.next;
+            size += 1;
+        }
+    }
+
+    // Remove the tail
+    public T remove () {
+        if (tail == null) {
+            return null;
+        }
+        T value = head.value;
+        if (tail.prev == null) {
+            head = null;
+            tail = null;
+            size = 0;
+            return value;
+        }
+        value = tail.value;
+        tail = tail.prev;
+        tail.next = null;
+        size -= 1;
+        return value;
+    }
+
+    public T remove (T value) {
+        Node<T> returnNode = head;
+        for (int i = 0; i < size(); i++) {
+            if (returnNode.next == null) {
+                // throw new RunTimeException (String.format("List index out of range at [%i]", i+1));
+            }
+            if (returnNode.value == value) {
+                //
+            }
+            returnNode = returnNode.next;
+        }
+        if (returnNode.next != null) {
+            returnNode.prev = returnNode.next;
+        }
+        else {
+            returnNode.prev = null;
+        }
+        size -= 1;
+        return returnNode.value;
+    }
+
+    public T removeAtIndex (int index) {
+        if (isEmpty()) {
+            return null;
+        }
+        Node<T> returnNode = head;
+        for (int i = 0; i < index; i++) {
+            if (returnNode.next == null) {
+                // throw new RunTimeException (String.format("List index out of range at [%i]", i+1));
+            }
+            returnNode = returnNode.next;
+        }
+        if (returnNode.next != null) {
+            returnNode.prev.next = returnNode.next;
+        }
+        else {
+            returnNode.prev.next = null;
+        }
+        size -= 1;
+        return returnNode.value;
+    }
+
+    @Override
+    public String toString () {
+        String retString = "{";
+        Node<T> current = head;
+
+        while (current != null) {
+            retString += (current.value.toString());
+            if (current.next != null) {
+                retString += ", ";
+            }
+            current = current.next;
+        }
+        retString += "}";
+        return retString;
+    }
+}

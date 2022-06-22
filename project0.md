@@ -1,26 +1,5 @@
 # Project 0
-For Project 0, you will be building a console-based application that will be presented on Wednesday, July 6, 2022. For this application you may choose one of the following concepts: 
-- a banking application 
-- course registration application
-- any other trainer-approved idea that is similar in functionality to the above project ideas (explicit trainer approval required for this)
-
-## Banking Application Details
-
-### User Stories
-As a user, I can:
-- [ ] register a new user account with the system (must be secured with a password)
-- [ ] login with my existing credentials
-- [ ] create at least one account
-- [ ] deposit funds into an account (use doubles, not ints)
-- [ ] withdraw funds from an account (no overdrafting!)
-- [ ] view the balance of my account(s) (all balance displays must be in proper currency format)
-
-### Suggested Bonus User Stories
-As a user I can:
-- [ ] view the transaction history for an account
-- [ ] create multiple accounts per user (checking, savings, etc.)
-- [ ] share a joint account with another user
-- [ ] transfer money between accounts
+For Project 0, I will be building a console-based application that will be presented on Wednesday, July 6, 2022.
 
 ## Course Registration Application Details 
 
@@ -40,19 +19,6 @@ As a student, I can:
 - [ ] register for an open and available class
 - [ ] cancel my registration for a class (if within window)
 - [ ] view the classes that I have registered for
-
-## Custom Project Concept Details
-
-You are welcome to come up with your own project concept if you would like. The basic requirements of the application are as follows:
-- Persist data into a relational database
-- Allow users to interface (via the console) with an application that allows for them to create, read, update, and delete that persisted data
-- Complies with the minimum features (specified below)
-- Minimum number of user stories: 7
-
-Send your project concept descriptions to your trainer via Slack and await concept approval. Additionally, please specify the following when writing up your pitch:
-- Application Name
-- High Level Description
-- User Story List
 
 ## Minimum Features
 
