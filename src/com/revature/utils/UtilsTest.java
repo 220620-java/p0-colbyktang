@@ -1,4 +1,4 @@
-package src.com.revature.test;
+package src.com.revature.utils;
 
 // Junit imports
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -7,7 +7,7 @@ import org.junit.*;
 // Utils imports
 import src.com.revature.utils.*;
 
-public class UtilsTesting {
+public class UtilsTest {
     @Test
     public void ListInstantiation () {
         List<Integer> testList = new List<Integer>(new Integer[]{1,2,3});

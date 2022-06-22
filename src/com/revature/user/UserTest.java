@@ -1,15 +1,11 @@
-package src.com.revature.test;
+package src.com.revature.user;
 
 // Junit imports
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.*;
 
-// Student imports
-import src.com.revature.user.Student;
-import src.com.revature.user.FacultyMember;
-
-public class UserTesting {
+public class UserTest {
     
     @Test
     public void StudentInstantiation() {
@@ -21,7 +17,8 @@ public class UserTesting {
             "jsmith@email.com"
         );
         
-        assertEquals(1, student.getId());                       // id
+        student.resetNextID();
+        assertEquals(101, student.getId());                       // id
         assertEquals("John", student.getFirstName());           // first name
         assertEquals("Smith", student.getLastName());           // last name
         assertEquals("jsmith", student.getUsername());          // username
@@ -39,9 +36,33 @@ public class UserTesting {
             "jsmith@email.com"
         );
         
-        String expected = "StudentID: = 1, First Name = John, Last Name = Smith, Username = jsmith, Email = jsmith@email.com";
+        student.resetNextID();
+        String expected = "StudentID: = 101, First Name = John, Last Name = Smith, Username = jsmith, Email = jsmith@email.com";
         System.out.println(student);
         assertEquals(expected, student.toString());
+    }
+
+    @Test 
+    public void StudentHashCode() {
+        Student student = new Student(
+            "John", 
+            "Smith", 
+            "jsmith", 
+            "pass", 
+            "jsmith@email.com"
+        );
+        student.resetNextID();
+
+        Student student2 = new Student(
+            "John", 
+            "Smith", 
+            "jsmith", 
+            "pass", 
+            "jsmith@email.com"
+        );
+        student.resetNextID();
+        
+        assertTrue(student.hashCode() == student2.hashCode());
     }
 
     @Test
@@ -54,11 +75,10 @@ public class UserTesting {
             "jshmoe@email.com"
         );
         
-        // assertEquals(2, faculty.getId());
-        assertEquals("Joe", faculty.getFirstName());           // first name
-        assertEquals("Shmoe", faculty.getLastName());           // last name
-        assertEquals("jshmoe", faculty.getUsername());          // username
+        faculty.resetNextID();
+        String expected = "FacultyID: = 101, First Name = Joe, Last Name = Shmoe, Username = jshmoe, Email = jshmoe@email.com";
+        System.out.println(faculty);
+        assertEquals(expected, faculty.toString());
         assertTrue(faculty.validatePassword("pass")); // password
-        assertEquals("jshmoe@email.com", faculty.getEmail());   // email
     }
 }
