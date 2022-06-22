@@ -29,10 +29,10 @@
     - view the classes that I have registered for
  */
 
-package src.com.revature.main;
+package src.com.revature.courseapp.main;
 import java.util.Scanner;
 
-import src.com.revature.user.Student;
+import src.com.revature.courseapp.user.Student;
 
 public class Main {
     public static void main (String[] args) {

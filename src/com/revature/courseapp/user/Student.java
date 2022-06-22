@@ -10,9 +10,9 @@
  * - view the classes that I have registered for
  */
 
-package src.com.revature.user;
+package src.com.revature.courseapp.user;
 
-import src.com.revature.course.Course;
+import src.com.revature.courseapp.course.Course;
 
 
 public class Student extends User {
@@ -37,6 +37,7 @@ public class Student extends User {
     // Constructor
     public Student (String first, String last, String username, String password, String email) {
         super(first, last, username, password, email);
+        userType = UserType.STUDENT;
     }
 
     private static final String ToStringTemplate = "StudentID: = %1s, First Name = %2s, Last Name = %3s, Username = %4s, Email = %5s";

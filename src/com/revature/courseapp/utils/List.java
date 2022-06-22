@@ -1,4 +1,4 @@
-package src.com.revature.utils;
+package src.com.revature.courseapp.utils;
 
 import java.lang.Exception;
 import java.lang.RuntimeException;

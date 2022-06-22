@@ -1,4 +1,4 @@
-package src.com.revature.user;
+package src.com.revature.courseapp.user;
 
 // Junit imports
 import static org.junit.Assert.assertTrue;

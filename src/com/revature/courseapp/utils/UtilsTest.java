@@ -1,11 +1,11 @@
-package src.com.revature.utils;
+package src.com.revature.courseapp.utils;
 
 // Junit imports
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.*;
 
 // Utils imports
-import src.com.revature.utils.*;
+import src.com.revature.courseapp.utils.*;
 
 public class UtilsTest {
     @Test
