@@ -16,18 +16,29 @@ public class UtilsTesting {
 
     @Test
     public void ListGet () {
+        List<Integer> testList = new List<Integer>(new Integer[]{1,2,3});
+        assertEquals(1, testList.get(0));
+        assertEquals(2, testList.get(1));
+        assertEquals(3, testList.get(2));
+    }
+
+    @Test
+    public void ListGetAdd () {
         List<Integer> testList = new List<Integer>();
         testList.add (1);
         testList.add (2);
         testList.add (3);
         testList.add (6);
         testList.add (7);
-        int value = testList.get(3);
-        assertEquals(6, value);
+        assertEquals(1, testList.get(0));
+        assertEquals(2, testList.get(1));
+        assertEquals(3, testList.get(2));
+        assertEquals(6, testList.get(3));
+        assertEquals(7, testList.get(4));
     }
 
     @Test
-    public void ListAdd () {
+    public void ListGetAdd2 () {
         List<Integer> testList = new List<Integer>();
         testList.add (5);
         testList.add (11);
