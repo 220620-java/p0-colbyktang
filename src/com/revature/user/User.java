@@ -5,7 +5,12 @@ package src.com.revature.user;
 
 import java.util.Objects;
 
-public class User {
+public abstract class User {
+    enum UserType {
+        STUDENT,
+        FACULTY
+    }
+
     private static int nextId = 100;
     protected int id;
     protected String firstName;
@@ -13,6 +18,7 @@ public class User {
     protected String username;
     protected String password;
     protected String email;
+    protected UserType userType;
 
     // Pre-Increment nextId whenever a user is created
     {
