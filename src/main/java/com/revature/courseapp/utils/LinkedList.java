@@ -1,16 +1,16 @@
-package src.com.revature.utils;
+package com.revature.courseapp.utils;
 
 import java.lang.Exception;
-import java.lang.RuntimeException;
+import java.lang.UnsupportedOperationException;
 
-public class List <T> {
+public class LinkedList <T> implements List<T> {
     Node<T> head;
     Node<T> tail;
     int size;
 
-    public List () {}
+    public LinkedList () {}
 
-    public List (T[] arr) {
+    public LinkedList (T[] arr) {
         for (T item : arr) {
             add(item);
         }
@@ -79,10 +79,21 @@ public class List <T> {
 
     // Adds the other list at the end
     public void addAll (List<T> arr) {
-        arr.head.prev = tail;
-        tail.next = arr.head;
-        tail = arr.tail;
-        size += arr.size();
+        try {
+            LinkedList<T> linkedList = (LinkedList<T>) arr;
+            linkedList.head.prev = tail;
+            tail.next = linkedList.head;
+            tail = linkedList.tail;
+            size += linkedList.size();
+        }
+        catch (Exception e) {
+            throw new UnsupportedOperationException("Not implemented", e);
+        }
+        /*
+        if (arr instanceof LinkedList) {
+            
+        }
+        */
     }
 
     // Remove the tail
