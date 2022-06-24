@@ -1,12 +1,11 @@
 package com.revature.courseapp.utils;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import org.junit.jupiter.api.Test;
 import com.revature.courseapp.user.*;
 
 public class DatabaseTest {

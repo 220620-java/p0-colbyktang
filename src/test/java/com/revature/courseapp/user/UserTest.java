@@ -1,9 +1,9 @@
 package com.revature.courseapp.user;
 
 // Junit imports
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-import org.junit.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 public class UserTest {
     
@@ -27,6 +27,7 @@ public class UserTest {
     @Test 
     public void StudentToString() {
         Student student = new Student(
+            101,
             "John", 
             "Smith", 
             "jsmith", 
