@@ -1,5 +1,6 @@
-package src.main.java.com.revature;
+package com.revature;
 import java.util.Scanner;
+import com.revature.courseapp.utils.PostgreSQL;
 
 /*
  * Minimum features
@@ -38,7 +39,7 @@ public class App {
             "Welcome to Course Registration by Colby Tang!"
         );
         boolean isLoggedIn = false;
-        String input = "";
+        int input = 0;
         Scanner scanner = new Scanner(System.in);
         while (true) {
             if (!isLoggedIn) {
@@ -46,14 +47,14 @@ public class App {
                 System.out.print(
                     "Please choose an option: "
                 );
-                input = scanner.nextLine();
+                input = scanner.nextInt();
                 switch (input) {
-                    case "1":
+                    case 1:
                         isLoggedIn = true;
                         break;
-                    case "2":
+                    case 2:
                         break;
-                    case "3":
+                    case 3:
                         scanner.close();
                         return;
                 }

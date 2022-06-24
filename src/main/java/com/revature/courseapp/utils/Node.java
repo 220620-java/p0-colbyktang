@@ -1,4 +1,4 @@
-package src.main.java.com.revature.courseapp.utils;
+package com.revature.courseapp.utils;
 
 public class Node <T> {
     T value;

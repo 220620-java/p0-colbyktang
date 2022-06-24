@@ -1,7 +1,7 @@
 // Project 0
 // Made by Colby Tang for Revature
 
-package src.main.java.com.revature.courseapp.user;
+package com.revature.courseapp.user;
 
 import java.util.Objects;
 

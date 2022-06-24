@@ -1,4 +1,4 @@
-package src.main.java.com.revature.courseapp.user;
+package com.revature.courseapp.user;
 
 public class FacultyMember extends User {
     public FacultyMember (String first, String last, String username, String password, String email) {
