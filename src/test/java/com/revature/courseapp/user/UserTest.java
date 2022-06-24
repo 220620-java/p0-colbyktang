@@ -3,10 +3,17 @@ package com.revature.courseapp.user;
 // Junit imports
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 public class UserTest {
     
+    @AfterEach
+    public void resetNextStudentID () {
+        User.resetNextID();
+    }
+
     @Test
     public void StudentInstantiation() {
         Student student = new Student(
@@ -16,7 +23,7 @@ public class UserTest {
             "jsmith@email.com"
         );
         
-        student.resetNextID();
+        
         assertEquals(101, student.getId());                       // id
         assertEquals("John", student.getFirstName());           // first name
         assertEquals("Smith", student.getLastName());           // last name
@@ -34,7 +41,6 @@ public class UserTest {
             "jsmith@email.com"
         );
         
-        student.resetNextID();
         String expected = "StudentID: = 101, First Name = John, Last Name = Smith, Username = jsmith, Email = jsmith@email.com";
         System.out.println(student);
         assertEquals(expected, student.toString());
@@ -50,7 +56,7 @@ public class UserTest {
             "jsmith", 
             "jsmith@email.com"
         );
-        student.resetNextID();
+        User.resetNextID();
 
         Student student2 = new Student(
             "John", 
@@ -58,7 +64,7 @@ public class UserTest {
             "jsmith", 
             "jsmith@email.com"
         );
-        student.resetNextID();
+        User.resetNextID();
         
         assertTrue(student.hashCode() == student2.hashCode());
     }
@@ -72,7 +78,6 @@ public class UserTest {
             "jshmoe@email.com"
         );
         
-        faculty.resetNextID();
         String expected = "FacultyID: = 101, First Name = Joe, Last Name = Shmoe, Username = jshmoe, Email = jshmoe@email.com";
         System.out.println(faculty);
         assertEquals(expected, faculty.toString());
