@@ -1,7 +1,9 @@
 package com.revature.courseapp.utils;
 
+import java.nio.charset.StandardCharsets;
 // import software.aws.rds.jdbc.postgresql.Driver;
 import java.sql.*;
+import java.util.Base64;
 import java.util.Properties;
 
 import com.revature.courseapp.user.User;
@@ -91,7 +93,7 @@ public class PostgreSQL {
         return null;
     }
 
-    public boolean DoesUserExist (User user) {
+    public boolean doesUserExist (User user) {
         String selectSQLQuery = String.format ("SELECT * FROM users WHERE userid=%d OR username='%s'", user.getId(), user.getUsername());
 
         // Make sure user doesn't already exist
@@ -118,7 +120,7 @@ public class PostgreSQL {
         return false;
     }
 
-    public boolean DoesUserExist (String username) {
+    public boolean doesUserExist (String username) {
         String selectSQLQuery = String.format ("SELECT * FROM users WHERE username='%s'", username);
 
         // Make sure user doesn't already exist
@@ -146,9 +148,9 @@ public class PostgreSQL {
     }
 
     // Inserts a user into the database
-    public void InsertUser (User user, String pass, byte[] salt) {
+    public void insertUser (User user, String pass, byte[] salt) {
         // Check if user is already in the database
-        if (DoesUserExist (user)) {
+        if (doesUserExist (user)) {
             System.out.println("User already exists!");
             return;
         }
@@ -170,6 +172,7 @@ public class PostgreSQL {
 
             // Execute statement
             preparedStatement.executeUpdate();
+            preparedStatement.close();
         }
         catch (SQLException e) {
             e.printStackTrace();
@@ -190,6 +193,10 @@ public class PostgreSQL {
                 String ePass = Encryption.generateEncryptedPassword(password, salt);
                 result.close();
                 statement.close();
+                if (!ePass.equals(dbPass)) {
+                    System.out.println("Passwords do not match! ");
+                    return false;
+                }
                 return ePass.equals(dbPass);
             }
             result.close();
@@ -211,6 +218,7 @@ public class PostgreSQL {
             Statement statement = conn.createStatement();
             String truncateSQLQuery = String.format ("Truncate table %s", tableName);
             statement.execute(truncateSQLQuery);
+            statement.close();
         }
         catch (SQLException e) {
             e.printStackTrace();
@@ -221,5 +229,27 @@ public class PostgreSQL {
             return;
         }
         System.out.println(String.format ("%s Table truncated.", tableName));
+    }
+
+    public boolean removeUser (String username) {
+        if (!doesUserExist(username)) {
+            return false;
+        }
+
+        String removeSQLQuery = String.format ("DELETE FROM users WHERE username='%s'", username);
+        try {
+            Statement statement = conn.createStatement();
+            statement.executeUpdate(removeSQLQuery);
+            statement.close();
+            return true;
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

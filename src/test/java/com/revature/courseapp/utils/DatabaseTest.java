@@ -30,10 +30,10 @@ public class DatabaseTest {
     public void testDoesUserExist () {
         PostgreSQL db = new PostgreSQL();
         Student student = new Student ("Joe", "Test", "jtest", "jtest@email.com");
-        assertTrue (db.DoesUserExist(student));
-        assertTrue (db.DoesUserExist(student.getUsername()));
+        assertTrue (db.doesUserExist(student));
+        assertTrue (db.doesUserExist(student.getUsername()));
         Student noStudent = new Student (600, "Nobody", "Test", "ntest", "ntest@email.com");
-        assertFalse (db.DoesUserExist(noStudent));
+        assertFalse (db.doesUserExist(noStudent));
         try {
             db.getConnection().close();
         }
@@ -56,16 +56,16 @@ public class DatabaseTest {
         try {
             byte[] salt = Encryption.generateSalt();
             String pass = Encryption.generateEncryptedPassword("pass", salt);
-            db.InsertUser(student, pass, salt);
+            db.insertUser(student, pass, salt);
             salt = Encryption.generateSalt();
             pass = Encryption.generateEncryptedPassword("pass", salt);
-            db.InsertUser(student2, pass, salt);
+            db.insertUser(student2, pass, salt);
             salt = Encryption.generateSalt();
             pass = Encryption.generateEncryptedPassword("pass", salt);
-            db.InsertUser(student3, pass, salt);
+            db.insertUser(student3, pass, salt);
             salt = Encryption.generateSalt();
             pass = Encryption.generateEncryptedPassword("pass", salt);
-            db.InsertUser(facultyMember, pass, salt);
+            db.insertUser(facultyMember, pass, salt);
             try {
                 db.getConnection().close();
             }
