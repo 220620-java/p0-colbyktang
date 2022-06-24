@@ -1,4 +1,4 @@
-package com.revature;
+package com.revature.courseapp;
 import java.util.Scanner;
 import com.revature.courseapp.utils.PostgreSQL;
 

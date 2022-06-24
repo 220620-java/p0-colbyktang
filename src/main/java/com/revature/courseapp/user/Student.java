@@ -34,12 +34,19 @@ public class Student extends User {
     //     return enrolledCourses.addAll (courses);
     // }
 
-    // Constructor
-    public Student (String first, String last, String username, String password, String email) {
-        super(first, last, username, password, email);
+
+
+    // Constructor with an auto incrementing id
+    public Student (String first, String last, String username, String email) {
+        super(first, last, username, email);
         userType = UserType.STUDENT;
     }
-
+    // Constructor with a defined id
+    public Student (int id, String first, String last, String username, String email) {
+        super(id, first, last, username, email);
+        userType = UserType.STUDENT;
+    }
+    
     private static final String ToStringTemplate = "StudentID: = %1s, First Name = %2s, Last Name = %3s, Username = %4s, Email = %5s";
 
     public String toString () {

@@ -6,7 +6,7 @@ package com.revature.courseapp.user;
 import java.util.Objects;
 
 public abstract class User {
-    enum UserType {
+    public enum UserType {
         STUDENT,
         FACULTY
     }
@@ -16,14 +16,9 @@ public abstract class User {
     protected String firstName;
     protected String lastName;
     protected String username;
-    protected String password;
     protected String email;
     protected UserType userType;
-
-    // Pre-Increment nextId whenever a user is created
-    {
-        nextId++;
-    }
+    protected byte[] salt;
 
     // Getters
     public int getId () {
@@ -45,7 +40,11 @@ public abstract class User {
     public String getEmail () {
         return email;
     }
-    
+
+    public UserType getUserType () {
+        return userType;
+    }
+
     // For testing
     public void resetNextID () {
         nextId = 100;
@@ -53,7 +52,7 @@ public abstract class User {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, lastName, username, password, email);
+        return Objects.hash(id, firstName, lastName, username, email);
     }
 
     @Override
@@ -82,11 +81,6 @@ public abstract class User {
                 return false;
         } else if (!lastName.equals(other.lastName))
             return false;
-        if (password == null) {
-            if (other.password != null)
-                return false;
-        } else if (!password.equals(other.password))
-            return false;
         if (username == null) {
             if (other.username != null)
                 return false;
@@ -95,16 +89,22 @@ public abstract class User {
         return true;
     }
 
-    protected User (String first, String last, String username, String password, String email) {
+    // Constructor with a defined id
+    protected User (int id, String first, String last, String username, String email) {
+        this.id = id;
+        this.firstName = first;
+        this.lastName = last;
+        this.username = username;
+        this.email = email;
+    }
+
+    // Constructor with an auto incrementing id
+    protected User (String first, String last, String username, String email) {
+        nextId++;
         id = nextId;
         this.firstName = first;
         this.lastName = last;
         this.username = username;
-        this.password = password;
         this.email = email;
-    }
-
-    public boolean validatePassword (String password) {
-        return this.password.equals(password);
     }
 }
