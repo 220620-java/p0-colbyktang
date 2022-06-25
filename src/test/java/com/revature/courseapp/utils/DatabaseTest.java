@@ -5,13 +5,23 @@ import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import com.revature.courseapp.user.*;
 
 public class DatabaseTest {
+
+    PostgreSQL db;
+
+    @BeforeAll
+    public void OpenDatabase () {
+        db = new PostgreSQL();
+    }
+
     @Test
     public void testGetAllUsers() {
-        PostgreSQL db = new PostgreSQL();
         List<User> allUsers = db.getAllUsers();
         System.out.println(allUsers);
         try {
@@ -27,7 +37,6 @@ public class DatabaseTest {
 
     @Test
     public void testDoesUserExist () {
-        PostgreSQL db = new PostgreSQL();
         Student student = new Student ("Joe", "Test", "jtest", "jtest@email.com");
         assertTrue (db.doesUserExist(student));
         assertTrue (db.doesUserExist(student.getUsername()));
@@ -46,7 +55,6 @@ public class DatabaseTest {
 
     @Test
     public void testInsertUser() {
-        PostgreSQL db = new PostgreSQL();
         db.truncateTable("users");
         Student student = new Student ("Joe", "Test", "jtest", "jtest@email.com");
         Student student2 = new Student ("John", "Test", "jotest", "jtest@email.com");
@@ -79,10 +87,14 @@ public class DatabaseTest {
 
     @Test
     public void testValidatePassword () {
-        PostgreSQL db = new PostgreSQL();
         Student student = new Student ("Joe", "Test", "jtest", "jtest@email.com");
         assertTrue (db.validatePassword(student.getUsername(), "pass"));
         assertFalse (db.validatePassword(student.getUsername(), "pas"));
         assertFalse (db.validatePassword("notreal", "pas"));
+    }
+
+    @AfterAll
+    public void afterAll () {
+        db.closeConnection();
     }
 }
