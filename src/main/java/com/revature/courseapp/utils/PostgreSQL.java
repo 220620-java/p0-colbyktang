@@ -189,6 +189,43 @@ public class PostgreSQL {
         }
     }
 
+    public User getUserFromDB (String username) {
+        User user = null;
+        String selectSQLQuery = String.format ("SELECT * FROM users WHERE username='%s'", username);
+        try {
+            Statement statement = conn.createStatement();
+            ResultSet result = statement.executeQuery(selectSQLQuery);
+            while (result.next()) {
+                int userid = result.getInt("userid");
+                String firstname = result.getString("firstname");
+                String lastname = result.getString("lastname");
+                String email = result.getString("email");
+                String usertype = result.getString("usertype");
+                if (usertype.equals("STUDENT")) {
+                    user = new Student (userid, firstname, lastname, username, email);
+                }
+                if (usertype.equals("FACULTY")) {
+                    user = new FacultyMember (userid, firstname, lastname, username, email);
+                }
+                result.close();
+                statement.close();
+                System.out.println("RETURNING " + user);
+                return user;
+            }
+            result.close();
+            statement.close();
+            return user;
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+
     public boolean validatePassword (String username, String password) {
         String selectSQLQuery = String.format ("SELECT password, salt FROM users WHERE username='%s'", username);
         try {

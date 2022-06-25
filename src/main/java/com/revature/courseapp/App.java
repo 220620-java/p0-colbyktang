@@ -32,25 +32,73 @@ import java.util.Scanner;
     - view the classes that I have registered for
  */
 
+import com.revature.courseapp.Register;
+import com.revature.courseapp.utils.PostgreSQL;
+import com.revature.courseapp.user.User;
+
 public class App {
-    static boolean isLoggedIn = false;
+    private static PostgreSQL db;
+    private static boolean isLoggedIn = false;
+    private static User loggedUser = null;
+    private static Scanner scanner;
+
+    public static PostgreSQL getDB () {
+        return db;
+    }
+
+    public static boolean getIsLoggedIn () {
+        return isLoggedIn;
+    }
+
+    public static Scanner getScanner() {
+        return scanner;
+    }
+
+    public static void setLoggedUser (User user) {
+        loggedUser = user;
+    }
 
     public static void main (String[] args) {
+        db = new PostgreSQL();
+        scanner = new Scanner(System.in);
         System.out.println(
             "Welcome to Course Registration by Colby Tang!"
         );
         int input = 0;
-        while (true) {
+        while (input != 3) {
             if (!isLoggedIn) {
                 input = LoginMenu();
+                switch (input) {
+                    // Login
+                    case 1:
+                    isLoggedIn = Login.userLogin();
+                    break;
+    
+                    // Register
+                    case 2:
+                    Register.RegisterStudent();
+                    break;
+    
+                    // Exit
+                    case 3:
+                    return;
+                }
             }
             else {
-
+                System.out.println(String.format ("Logged in as %s", loggedUser.getUsername()));
+                if (loggedUser.getUserType() == User.UserType.STUDENT) {
+                    input = StudentMenu();
+                }
+                if (loggedUser.getUserType() == User.UserType.FACULTY) {
+                    input = FacultyMenu();
+                }
             }
 
-            // Exit the application
-            if (input <= -1) return;
+
         }
+        System.out.println("EXITING APPLICATION!");
+        scanner.close();
+        db.closeConnection();
     }
 
     public static int LoginMenu () {
@@ -62,21 +110,18 @@ public class App {
             "Please choose an option: "
         );
         int input = 0;
-        Scanner scanner = new Scanner(System.in);
+        
         input = scanner.nextInt();
+        scanner.nextLine();
         switch (input) {
             case 1:
                 isLoggedIn = true;
-                scanner.close();
                 return 1;
             case 2:
-                scanner.close();
                 return 2;
             case 3:
-                scanner.close();
-                return -1;
+                return 3;
         }
-        scanner.close();
         return 3;
     }
 
@@ -89,20 +134,16 @@ public class App {
         System.out.println("5. Logout");
 
         int input = 0;
-        Scanner scanner = new Scanner(System.in);
         input = scanner.nextInt();
+        scanner.nextLine();
         switch (input) {
             case 1:
-                scanner.close();
                 return 1;
             case 2:
-                scanner.close();
                 return 2;
             case 3:
-                scanner.close();
                 return -1;
         }
-        scanner.close();
         return 3;
     }
 
@@ -127,7 +168,6 @@ public class App {
                 scanner.close();
                 return -1;
         }
-        scanner.close();
         return 3;
     }
 }
