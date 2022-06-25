@@ -1,9 +1,7 @@
 package com.revature.courseapp.utils;
 
-import java.nio.charset.StandardCharsets;
 // import software.aws.rds.jdbc.postgresql.Driver;
 import java.sql.*;
-import java.util.Base64;
 import java.util.Properties;
 
 import com.revature.courseapp.user.User;
@@ -51,6 +49,15 @@ public class PostgreSQL {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void closeConnection () {
+        try {
+            conn.close();
+        }
+        catch (SQLException e) {
+            e.getStackTrace();
+        }
     }
 
     // Retrieves the entire table of users
