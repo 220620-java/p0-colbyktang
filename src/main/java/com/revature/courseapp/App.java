@@ -1,6 +1,5 @@
 package com.revature.courseapp;
 import java.util.Scanner;
-import com.revature.courseapp.utils.PostgreSQL;
 
 /*
  * Minimum features
@@ -34,57 +33,101 @@ import com.revature.courseapp.utils.PostgreSQL;
  */
 
 public class App {
+    static boolean isLoggedIn = false;
+
     public static void main (String[] args) {
         System.out.println(
             "Welcome to Course Registration by Colby Tang!"
         );
-        boolean isLoggedIn = false;
         int input = 0;
-        Scanner scanner = new Scanner(System.in);
         while (true) {
             if (!isLoggedIn) {
-                LoginMenu();
-                System.out.print(
-                    "Please choose an option: "
-                );
-                input = scanner.nextInt();
-                switch (input) {
-                    case 1:
-                        isLoggedIn = true;
-                        break;
-                    case 2:
-                        break;
-                    case 3:
-                        scanner.close();
-                        return;
-                }
+                input = LoginMenu();
             }
             else {
 
             }
+
+            // Exit the application
+            if (input <= -1) return;
         }
     }
 
-    public static void LoginMenu () {
+    public static int LoginMenu () {
         System.out.println("Login Menu");
-        System.out.println("1. Login");
+        System.out.println("1. Login User");
         System.out.println("2. Register As A Student");
         System.out.println("3. Exit");
+        System.out.print(
+            "Please choose an option: "
+        );
+        int input = 0;
+        Scanner scanner = new Scanner(System.in);
+        input = scanner.nextInt();
+        switch (input) {
+            case 1:
+                isLoggedIn = true;
+                scanner.close();
+                return 1;
+            case 2:
+                scanner.close();
+                return 2;
+            case 3:
+                scanner.close();
+                return -1;
+        }
+        scanner.close();
+        return 3;
     }
 
-    public static void StudentMenu () {
+    public static int StudentMenu () {
         System.out.println("Student Menu");
         System.out.println("1. View Available Classes");
         System.out.println("2. Enroll Class");
         System.out.println("3. Display Registered Classes");
         System.out.println("4. Cancel Class Enrollment");
         System.out.println("5. Logout");
+
+        int input = 0;
+        Scanner scanner = new Scanner(System.in);
+        input = scanner.nextInt();
+        switch (input) {
+            case 1:
+                scanner.close();
+                return 1;
+            case 2:
+                scanner.close();
+                return 2;
+            case 3:
+                scanner.close();
+                return -1;
+        }
+        scanner.close();
+        return 3;
     }
 
-    public static void FacultyMenu () {
+    public static int FacultyMenu () {
         System.out.println("Faculty Menu");
-        System.out.println("1. Login");
-        System.out.println("2. Register");
-        System.out.println("3. Exit");
+        System.out.println("1. Add New Classes");
+        System.out.println("2. Change Class Details");
+        System.out.println("3. Remove a Class");
+        System.out.println("4. Logout");
+
+        int input = 0;
+        Scanner scanner = new Scanner(System.in);
+        input = scanner.nextInt();
+        switch (input) {
+            case 1:
+                scanner.close();
+                return 1;
+            case 2:
+                scanner.close();
+                return 2;
+            case 3:
+                scanner.close();
+                return -1;
+        }
+        scanner.close();
+        return 3;
     }
 }
