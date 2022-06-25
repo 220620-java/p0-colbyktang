@@ -12,30 +12,7 @@
 
 package com.revature.courseapp.user;
 
-import com.revature.courseapp.course.Course;
-
-
 public class Student extends User {
-
-    // Fields
-    // private Set<Course> enrolledCourses = new HashSet<Course>();
-
-    // Getter
-    // public Set<Course> getCourses () {
-    //     return enrolledCourses;
-    // }
-
-    // Setter
-    // public boolean enrollCourse (Course course) {
-    //     return enrolledCourses.add (course);
-    // }
-    
-    // public boolean enrollCourses (HashSet<Course> courses) {
-    //     return enrolledCourses.addAll (courses);
-    // }
-
-
-
     // Constructor with an auto incrementing id
     public Student (String first, String last, String username, String email) {
         super(first, last, username, email);

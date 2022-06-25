@@ -1,10 +1,16 @@
 package com.revature.courseapp;
 
 // Junit imports
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-import org.junit.*;
+import org.junit.jupiter.api.Test;
+import com.revature.courseapp.Register;
+
+import com.revature.courseapp.user.*;
 
 public class AppTest {
     
+    @Test
+    public void RegisterStudent() {
+        Register.RegisterStudent();
+    }
+
 }

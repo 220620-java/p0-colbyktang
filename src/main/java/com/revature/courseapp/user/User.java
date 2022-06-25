@@ -46,7 +46,7 @@ public abstract class User {
     }
 
     // For testing
-    public void resetNextID () {
+    public static void resetNextID () {
         nextId = 100;
     }
 

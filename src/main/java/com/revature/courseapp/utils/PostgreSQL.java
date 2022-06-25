@@ -1,9 +1,7 @@
 package com.revature.courseapp.utils;
 
-import java.nio.charset.StandardCharsets;
 // import software.aws.rds.jdbc.postgresql.Driver;
 import java.sql.*;
-import java.util.Base64;
 import java.util.Properties;
 
 import com.revature.courseapp.user.User;
@@ -51,6 +49,15 @@ public class PostgreSQL {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void closeConnection () {
+        try {
+            conn.close();
+        }
+        catch (SQLException e) {
+            e.getStackTrace();
+        }
     }
 
     // Retrieves the entire table of users
@@ -180,6 +187,43 @@ public class PostgreSQL {
         catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public User getUserFromDB (String username) {
+        User user = null;
+        String selectSQLQuery = String.format ("SELECT * FROM users WHERE username='%s'", username);
+        try {
+            Statement statement = conn.createStatement();
+            ResultSet result = statement.executeQuery(selectSQLQuery);
+            while (result.next()) {
+                int userid = result.getInt("userid");
+                String firstname = result.getString("firstname");
+                String lastname = result.getString("lastname");
+                String email = result.getString("email");
+                String usertype = result.getString("usertype");
+                if (usertype.equals("STUDENT")) {
+                    user = new Student (userid, firstname, lastname, username, email);
+                }
+                if (usertype.equals("FACULTY")) {
+                    user = new FacultyMember (userid, firstname, lastname, username, email);
+                }
+                result.close();
+                statement.close();
+                System.out.println("RETURNING " + user);
+                return user;
+            }
+            result.close();
+            statement.close();
+            return user;
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return user;
     }
 
     public boolean validatePassword (String username, String password) {
