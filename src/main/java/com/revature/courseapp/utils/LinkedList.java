@@ -42,6 +42,23 @@ public class LinkedList <T> implements List<T> {
         return returnNode.value;
     }
 
+    // Retrieve a value at the index, returns -1 if it cannot be found
+    public int getIndex (T value) {
+        if (isEmpty()) {
+            return -1;
+        }
+
+        int returnIndex = 0;
+        Node<T> current = head;
+        do {
+            System.out.println(returnIndex);
+            if (current.value == value) return returnIndex;
+            returnIndex++;
+            current = current.next;
+        } while (current != null);
+        return -1;
+    }
+
     // Change a value at an index
     public void set (int index, T value) {
         Node<T> returnNode = head;

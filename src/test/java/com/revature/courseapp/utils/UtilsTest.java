@@ -156,4 +156,16 @@ public class UtilsTest {
         assertEquals("{}", testList.toString());
         assertEquals(null, testList.get(0));
     }
+
+    @Test
+    void testGetIndex() {
+        LinkedList<Integer> testList = new LinkedList<Integer>(new Integer[]{1,2,3,4,5});
+        assertEquals(5, testList.size());
+        assertEquals(1, testList.getIndex(2));
+        assertEquals(0, testList.getIndex(1));
+        assertEquals(2, testList.getIndex(3));
+        assertEquals(4, testList.getIndex(5));
+        assertEquals(3, testList.getIndex(4));
+        assertEquals(-1, testList.getIndex(8));
+    }
 }
