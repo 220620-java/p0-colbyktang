@@ -70,9 +70,9 @@ public class PostgreSQL {
             while (result.next()) 
             {
                 // Convert result into User object
-                int id = result.getInt ("userid");
-                String firstName = result.getString("firstName");
-                String lastName = result.getString("lastName");
+                int id = result.getInt ("user_id");
+                String firstName = result.getString("first_name");
+                String lastName = result.getString("last_name");
                 String username = result.getString("username");
                 String email = result.getString("email");
                 String usertype = result.getString ("usertype");
@@ -101,14 +101,14 @@ public class PostgreSQL {
     }
 
     public boolean doesUserExist (User user) {
-        String selectSQLQuery = String.format ("SELECT * FROM users WHERE userid=%d OR username='%s'", user.getId(), user.getUsername());
+        String selectSQLQuery = String.format ("SELECT * FROM users WHERE user_id=%d OR username='%s'", user.getId(), user.getUsername());
 
         // Make sure user doesn't already exist
         try {
             Statement statement = conn.createStatement();
             ResultSet result = statement.executeQuery(selectSQLQuery);
             while (result.next()) {
-                System.out.println(result.getInt("userid"));
+                System.out.println(result.getInt("user_id"));
                 result.close();
                 statement.close();
                 return true;
@@ -135,7 +135,7 @@ public class PostgreSQL {
             Statement statement = conn.createStatement();
             ResultSet result = statement.executeQuery(selectSQLQuery);
             while (result.next()) {
-                System.out.println(result.getInt("userid"));
+                System.out.println(result.getInt("user_id"));
                 result.close();
                 statement.close();
                 return true;
@@ -163,7 +163,7 @@ public class PostgreSQL {
         }
 
         String insertSQLQuery = "INSERT INTO users" +
-        "  (userid, firstName, lastName, username, email, usertype, password, salt) VALUES " +
+        "  (user_id, first_name, last_name, username, email, usertype, password, salt) VALUES " +
         " (?, ?, ?, ?, ?, ?, ?, ?);";
         try {
             // Prepare the statement for execution by filling user object fields
@@ -260,7 +260,7 @@ public class PostgreSQL {
     public void truncateTable (String tableName) {
         try {
             Statement statement = conn.createStatement();
-            String truncateSQLQuery = String.format ("Truncate table %s", tableName);
+            String truncateSQLQuery = String.format ("Truncate table %s CASCADE", tableName);
             statement.execute(truncateSQLQuery);
             statement.close();
         }

@@ -9,14 +9,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
 import com.revature.courseapp.user.*;
 
 public class DatabaseTest {
 
-    PostgreSQL db;
+    static PostgreSQL db;
 
     @BeforeAll
-    public void OpenDatabase () {
+    public static void OpenDatabase () {
         db = new PostgreSQL();
     }
 
@@ -73,12 +74,6 @@ public class DatabaseTest {
             salt = Encryption.generateSalt();
             pass = Encryption.generateEncryptedPassword("pass", salt);
             db.insertUser(facultyMember, pass, salt);
-            try {
-                db.getConnection().close();
-            }
-            catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
         catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -87,14 +82,22 @@ public class DatabaseTest {
 
     @Test
     public void testValidatePassword () {
-        Student student = new Student ("Joe", "Test", "jtest", "jtest@email.com");
-        assertTrue (db.validatePassword(student.getUsername(), "pass"));
-        assertFalse (db.validatePassword(student.getUsername(), "pas"));
-        assertFalse (db.validatePassword("notreal", "pas"));
+        Student student = new Student (202, "Vladimir", "Password", "vpass", "vpass@email.com");
+        try {
+            byte[] salt = Encryption.generateSalt();
+            String pass = Encryption.generateEncryptedPassword("pass", salt);
+            db.insertUser(student, pass, salt);
+            assertTrue (db.validatePassword(student.getUsername(), "pass"));
+            assertFalse (db.validatePassword(student.getUsername(), "pas"));
+            assertFalse (db.validatePassword("notreal", "pas"));
+        }
+        catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
     }
 
     @AfterAll
-    public void afterAll () {
+    public static void afterAll () {
         db.closeConnection();
     }
 }
