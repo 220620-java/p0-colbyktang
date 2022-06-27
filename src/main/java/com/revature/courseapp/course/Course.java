@@ -61,6 +61,10 @@ public class Course {
         return enrolledStudents.size();
     }
 
+    public List<Student> getEnrolledStudents () {
+        return enrolledStudents;
+    }
+
     public void setEnrolledStudents (List<Student> students) {
         enrolledStudents = students;
     }
@@ -73,5 +77,54 @@ public class Course {
         if (!isStudentInCourse(student)) {
             enrolledStudents.add(student);
         } 
+    }
+
+    private static final String ToStringTemplate = "CourseID: = %d, Course Name = %2s, Semester = %3s, Capacity = %d, EnrolledStudents = %s";
+
+    public String toString () {
+        return String.format (ToStringTemplate, this.getId(), this.getCourseName(), this.getSemester(), this.getCapacity(), this.getEnrolledStudents());
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + capacity;
+        result = prime * result + courseId;
+        result = prime * result + ((courseName == null) ? 0 : courseName.hashCode());
+        result = prime * result + ((enrolledStudents == null) ? 0 : enrolledStudents.hashCode());
+        result = prime * result + ((semester == null) ? 0 : semester.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Course other = (Course) obj;
+        if (capacity != other.capacity)
+            return false;
+        if (courseId != other.courseId)
+            return false;
+        if (courseName == null) {
+            if (other.courseName != null)
+                return false;
+        } else if (!courseName.equals(other.courseName))
+            return false;
+        if (enrolledStudents == null) {
+            if (other.enrolledStudents != null)
+                return false;
+        } else if (!enrolledStudents.equals(other.enrolledStudents))
+            return false;
+        if (semester == null) {
+            if (other.semester != null)
+                return false;
+        } else if (!semester.equals(other.semester))
+            return false;
+        return true;
     }
 }

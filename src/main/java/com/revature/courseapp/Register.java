@@ -63,7 +63,7 @@ public class Register {
         try {
             byte[] salt = Encryption.generateSalt();
             String pass = Encryption.generateEncryptedPassword(password, salt);
-            App.getDB().insertUser(student, pass, salt);
+            App.getUserDB().insertUser(student, pass, salt);
             System.out.println(String.format ("Created student %s %s. ID: %d", firstName, lastName, student.getId()));
         }
         catch (NoSuchAlgorithmException e) {

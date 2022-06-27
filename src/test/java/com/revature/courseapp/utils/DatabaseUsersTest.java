@@ -12,13 +12,18 @@ import org.junit.jupiter.api.Test;
 
 import com.revature.courseapp.user.*;
 
-public class DatabaseTest {
+public class DatabaseUsersTest {
 
-    static PostgreSQL db;
+    static DatabaseUsers db;
 
     @BeforeAll
     public static void OpenDatabase () {
-        db = new PostgreSQL();
+        db = new DatabaseUsers();
+    }
+
+    @AfterAll
+    public static void afterAll () {
+        db.closeConnection();
     }
 
     @Test
@@ -96,8 +101,8 @@ public class DatabaseTest {
         }
     }
 
-    @AfterAll
-    public static void afterAll () {
-        db.closeConnection();
+    @Test
+    void testGetAllEnrolledStudents() {
+
     }
 }

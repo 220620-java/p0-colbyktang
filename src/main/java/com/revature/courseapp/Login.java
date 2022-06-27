@@ -23,9 +23,9 @@ public class Login {
         } while (password == "");
 
         // Check user from the database
-        boolean isPasswordValid = App.getDB().validatePassword(username, password);
+        boolean isPasswordValid = App.getUserDB().validatePassword(username, password);
         if (isPasswordValid) {
-            App.setLoggedUser(App.getDB().getUserFromDB(username));
+            App.setLoggedUser(App.getUserDB().getUserFromDB(username));
         }
         else {
             System.out.println("Password is not correct!");

@@ -33,17 +33,24 @@ import java.util.Scanner;
  */
 
 import com.revature.courseapp.Register;
+import com.revature.courseapp.utils.DatabaseCourses;
+import com.revature.courseapp.utils.DatabaseUsers;
 import com.revature.courseapp.utils.PostgreSQL;
 import com.revature.courseapp.user.User;
 
 public class App {
-    private static PostgreSQL db;
+    private static DatabaseUsers userDB;
+    private static DatabaseCourses courseDB;
     private static boolean isLoggedIn = false;
     private static User loggedUser = null;
     private static Scanner scanner;
 
-    public static PostgreSQL getDB () {
-        return db;
+    public static DatabaseUsers getUserDB () {
+        return userDB;
+    }
+
+    public static DatabaseCourses getCourseDB () {
+        return courseDB;
     }
 
     public static boolean getIsLoggedIn () {
@@ -59,7 +66,9 @@ public class App {
     }
 
     public static void main (String[] args) {
-        db = new PostgreSQL();
+        PostgreSQL db = new PostgreSQL();
+        userDB = (DatabaseUsers) db;
+        courseDB = (DatabaseCourses) db;
         scanner = new Scanner(System.in);
         System.out.println(
             "Welcome to Course Registration by Colby Tang!"
