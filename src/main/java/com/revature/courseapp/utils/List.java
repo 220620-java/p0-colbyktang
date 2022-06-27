@@ -5,6 +5,7 @@ public interface List <T> {
     public boolean isEmpty();
     public void set (int index, T value);
     public T get (int index);
+    public int getIndex (T value);
     public void add (T value);
     public void addAll (List<T> arr);
     public T remove ();
