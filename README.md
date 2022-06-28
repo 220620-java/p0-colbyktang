@@ -4,6 +4,10 @@ A console-based course registration application that will allow students and fac
 
 Students will be able to register a new account, view classes available for registration, register for classes, cancel class registrations, and view enrolled classes.
 
+Faculty members can add new classes, change class details, and remove a class.
+
+Students, faculty members, and courses will be stored on a RDS hosted by Amazon Web Services so internet is required.
+
 ## Tech Stack
 - Java 8
 - Apache Maven
