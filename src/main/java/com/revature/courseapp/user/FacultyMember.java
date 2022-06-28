@@ -17,6 +17,10 @@ public class FacultyMember extends User {
     
     private static final String ToStringTemplate = "FacultyID: = %1s, First Name = %2s, Last Name = %3s, Username = %4s, Email = %5s";
 
+    
+    /** 
+     * @return String
+     */
     public String toString () {
         return String.format (ToStringTemplate, this.id, this.firstName, this.lastName, this.username, this.email);
     }

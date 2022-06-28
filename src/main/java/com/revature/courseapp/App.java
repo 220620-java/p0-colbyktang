@@ -32,7 +32,6 @@ import java.util.Scanner;
     - view the classes that I have registered for
  */
 
-import com.revature.courseapp.Register;
 import com.revature.courseapp.utils.DatabaseCourses;
 import com.revature.courseapp.utils.DatabaseUsers;
 import com.revature.courseapp.utils.PostgreSQL;
@@ -45,26 +44,50 @@ public class App {
     private static User loggedUser = null;
     private static Scanner scanner;
 
+    
+    /** 
+     * @return DatabaseUsers
+     */
     public static DatabaseUsers getUserDB () {
         return userDB;
     }
 
+    
+    /** 
+     * @return DatabaseCourses
+     */
     public static DatabaseCourses getCourseDB () {
         return courseDB;
     }
 
+    
+    /** 
+     * @return boolean
+     */
     public static boolean getIsLoggedIn () {
         return isLoggedIn;
     }
 
+    
+    /** 
+     * @return Scanner
+     */
     public static Scanner getScanner() {
         return scanner;
     }
 
+    
+    /** 
+     * @param user
+     */
     public static void setLoggedUser (User user) {
         loggedUser = user;
     }
 
+    
+    /** 
+     * @param args
+     */
     public static void main (String[] args) {
         PostgreSQL db = new PostgreSQL();
         userDB = (DatabaseUsers) db;
@@ -110,6 +133,10 @@ public class App {
         db.closeConnection();
     }
 
+    
+    /** 
+     * @return int
+     */
     public static int LoginMenu () {
         System.out.println("Login Menu");
         System.out.println("1. Login User");
@@ -134,6 +161,10 @@ public class App {
         return 3;
     }
 
+    
+    /** 
+     * @return int
+     */
     public static int StudentMenu () {
         System.out.println("Student Menu");
         System.out.println("1. View Available Classes");
@@ -156,6 +187,10 @@ public class App {
         return 3;
     }
 
+    
+    /** 
+     * @return int
+     */
     public static int FacultyMenu () {
         System.out.println("Faculty Menu");
         System.out.println("1. Add New Classes");
@@ -164,7 +199,6 @@ public class App {
         System.out.println("4. Logout");
 
         int input = 0;
-        Scanner scanner = new Scanner(System.in);
         input = scanner.nextInt();
         switch (input) {
             case 1:

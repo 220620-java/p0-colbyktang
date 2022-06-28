@@ -7,6 +7,10 @@ import com.revature.courseapp.utils.Encryption;
 
 public class Login {
     
+    
+    /** 
+     * @return boolean
+     */
     public static boolean userLogin () {
         Scanner scanner = App.getScanner();
         String username = "";

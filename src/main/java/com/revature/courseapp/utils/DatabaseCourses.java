@@ -7,6 +7,18 @@ import com.revature.courseapp.user.Student;
 
 public class DatabaseCourses extends PostgreSQL {
 
+    public DatabaseCourses () {
+        super();
+    }
+
+    public DatabaseCourses (String jsonFilename) {
+        super(jsonFilename);
+    }
+    
+    /** 
+     * @param course
+     * @return boolean
+     */
     // Make sure course doesn't already exist
     public boolean doesCourseExist (Course course) {
         String query = String.format (
@@ -39,6 +51,10 @@ public class DatabaseCourses extends PostgreSQL {
         return false;
     }
     
+    
+    /** 
+     * @param course
+     */
     public void insertCourse (Course course) {
         // Check if user is already in the database
         if (doesCourseExist(course)) {
@@ -71,6 +87,11 @@ public class DatabaseCourses extends PostgreSQL {
         }
     }
 
+    
+    /** 
+     * @param course
+     * @return boolean
+     */
     public boolean removeCourse (Course course) {
         if (!doesCourseExist(course)) {
             return false;
@@ -93,6 +114,11 @@ public class DatabaseCourses extends PostgreSQL {
         return false;
     }
 
+    
+    /** 
+     * @param course
+     * @param student
+     */
     public void enrollCourse (Course course, Student student) {
         try {
             Statement statement = conn.createStatement();
@@ -132,6 +158,12 @@ public class DatabaseCourses extends PostgreSQL {
         }
     }
 
+    
+    /** 
+     * @param course
+     * @param student
+     * @return boolean
+     */
     public boolean WithdrawCourse (Course course, Student student) {
         String query = String.format ("DELETE FROM coursesusers WHERE course_id='%d' AND user_id='%d'", course.getId(), student.getId());
         try {
@@ -150,6 +182,11 @@ public class DatabaseCourses extends PostgreSQL {
         return false;
     }
 
+    
+    /** 
+     * @param course_id
+     * @return Course
+     */
     public Course getCourse (int course_id) {
         String query = String.format ("SELECT * FROM courses WHERE course_id=%d", course_id);
         Statement statement = null;
@@ -175,6 +212,11 @@ public class DatabaseCourses extends PostgreSQL {
         return null;
     }
 
+    
+    /** 
+     * @param student_id
+     * @return List<Course>
+     */
     public List<Course> getAllEnrolledCourses (int student_id) {
         List<Course> enrolledCourses = new LinkedList<>();
         String query = String.format ("SELECT course_id FROM coursesusers WHERE user_id=%d", student_id);

@@ -16,14 +16,27 @@ public class LinkedList <T> implements List<T> {
         }
     }
 
+    
+    /** 
+     * @return int
+     */
     public int size() {
         return size;
     }
 
+    
+    /** 
+     * @return boolean
+     */
     public boolean isEmpty() {
         return size <= 0;
     }
 
+    
+    /** 
+     * @param index
+     * @return T
+     */
     // Retrieve a value at the index
     public T get (int index) {
         if (isEmpty()) {
@@ -42,6 +55,11 @@ public class LinkedList <T> implements List<T> {
         return returnNode.value;
     }
 
+    
+    /** 
+     * @param value
+     * @return int
+     */
     // Retrieve a value at the index, returns -1 if it cannot be found
     public int getIndex (T value) {
         if (isEmpty()) {
@@ -59,6 +77,11 @@ public class LinkedList <T> implements List<T> {
         return -1;
     }
 
+    
+    /** 
+     * @param index
+     * @param value
+     */
     // Change a value at an index
     public void set (int index, T value) {
         Node<T> returnNode = head;
@@ -71,6 +94,10 @@ public class LinkedList <T> implements List<T> {
         returnNode.value = value;
     }
 
+    
+    /** 
+     * @param value
+     */
     // Add new node at the end
     public void add (T value) {
         if (head == null) {
@@ -94,6 +121,10 @@ public class LinkedList <T> implements List<T> {
         }
     }
 
+    
+    /** 
+     * @param arr
+     */
     // Adds the other list at the end
     public void addAll (List<T> arr) {
         try {
@@ -113,6 +144,10 @@ public class LinkedList <T> implements List<T> {
         */
     }
 
+    
+    /** 
+     * @return T
+     */
     // Remove the tail
     public T remove () {
         if (tail == null) {
@@ -132,6 +167,11 @@ public class LinkedList <T> implements List<T> {
         return value;
     }
 
+    
+    /** 
+     * @param value
+     * @return T
+     */
     // Find and remove a specific value
     public T remove (T value) {
         Node<T> returnNode = head;
@@ -155,6 +195,11 @@ public class LinkedList <T> implements List<T> {
         return returnNode.value;
     }
 
+    
+    /** 
+     * @param index
+     * @return T
+     */
     public T removeAtIndex (int index) {
         if (index < 0) {
             return null;
@@ -201,6 +246,10 @@ public class LinkedList <T> implements List<T> {
         return returnNode.value;
     }
 
+    
+    /** 
+     * @return String
+     */
     @Override
     public String toString () {
         String retString = "{";

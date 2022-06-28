@@ -7,6 +7,12 @@ import java.security.SecureRandom;
 
 public class Encryption {
 
+    
+    /** 
+     * @param password
+     * @param salt
+     * @return String
+     */
     public static String generateEncryptedPassword (String password, byte[] salt) {
         String encryptedPassword = "";
         try {
@@ -32,6 +38,11 @@ public class Encryption {
         return encryptedPassword;
     }
 
+    
+    /** 
+     * @return byte[]
+     * @throws NoSuchAlgorithmException
+     */
     public static byte[] generateSalt() throws NoSuchAlgorithmException {
         // Create Random Number Generator with SHA1PRNG algorithm
         SecureRandom randomNumber = SecureRandom.getInstance("SHA1PRNG");

@@ -20,27 +20,51 @@ public abstract class User {
     protected UserType userType;
     protected byte[] salt;
 
+    
+    /** 
+     * @return int
+     */
     // Getters
     public int getId () {
         return id;
     }
 
+    
+    /** 
+     * @return String
+     */
     public String getFirstName () {
         return firstName;
     }
 
+    
+    /** 
+     * @return String
+     */
     public String getLastName () {
         return lastName;
     }
 
+    
+    /** 
+     * @return String
+     */
     public String getUsername () {
         return username;
     }
 
+    
+    /** 
+     * @return String
+     */
     public String getEmail () {
         return email;
     }
 
+    
+    /** 
+     * @return UserType
+     */
     public UserType getUserType () {
         return userType;
     }
@@ -50,11 +74,20 @@ public abstract class User {
         nextId = 100;
     }
 
+    
+    /** 
+     * @return int
+     */
     @Override
     public int hashCode() {
         return Objects.hash(id, firstName, lastName, username, email);
     }
 
+    
+    /** 
+     * @param obj
+     * @return boolean
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj)

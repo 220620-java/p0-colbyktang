@@ -15,7 +15,11 @@ public class DatabaseCoursesTest {
 
     @BeforeAll
     public static void OpenDatabase () {
-        db = new DatabaseCourses();
+        // Try to use AWS DB
+        db = new DatabaseCourses ("aws_db.json");
+
+        // If AWS does not work use local database
+        if (db.getConnection() == null) db = new DatabaseCourses();
     }
 
     @AfterAll

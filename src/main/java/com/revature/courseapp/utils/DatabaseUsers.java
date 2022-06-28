@@ -8,6 +8,18 @@ import com.revature.courseapp.user.FacultyMember;
 
 public class DatabaseUsers extends PostgreSQL {
 
+    public DatabaseUsers () {
+        super();
+    }
+
+    public DatabaseUsers (String jsonFilename) {
+        super(jsonFilename);
+    }
+
+    
+    /** 
+     * @return List<User>
+     */
     // Retrieves the entire table of users
     public List<User> getAllUsers () {
         String sqlQuery = "SELECT * FROM users";
@@ -47,6 +59,11 @@ public class DatabaseUsers extends PostgreSQL {
         return null;
     }
 
+    
+    /** 
+     * @param course_id
+     * @return List<Student>
+     */
     public List<Student> getAllEnrolledStudents (int course_id) {
         List<Student> enrolledStudents = new LinkedList<>();
         String query = String.format ("SELECT user_id FROM coursesusers WHERE course_id=%d", course_id);
@@ -82,6 +99,11 @@ public class DatabaseUsers extends PostgreSQL {
         return enrolledStudents;
     }
 
+    
+    /** 
+     * @param user
+     * @return boolean
+     */
     public boolean doesUserExist (User user) {
         String selectSQLQuery = String.format ("SELECT * FROM users WHERE user_id=%d OR username='%s'", user.getId(), user.getUsername());
 
@@ -109,6 +131,11 @@ public class DatabaseUsers extends PostgreSQL {
         return false;
     }
 
+    
+    /** 
+     * @param username
+     * @return boolean
+     */
     public boolean doesUserExist (String username) {
         String selectSQLQuery = String.format ("SELECT * FROM users WHERE username='%s'", username);
 
@@ -138,6 +165,12 @@ public class DatabaseUsers extends PostgreSQL {
         return false;
     }
 
+    
+    /** 
+     * @param user
+     * @param pass
+     * @param salt
+     */
     // Inserts a user into the database
     public void insertUser (User user, String pass, byte[] salt) {
         // Check if user is already in the database
@@ -173,6 +206,11 @@ public class DatabaseUsers extends PostgreSQL {
         }
     }
 
+    
+    /** 
+     * @param username
+     * @return User
+     */
     public User getUserFromDB (String username) {
         User user = null;
         String selectSQLQuery = String.format ("SELECT * FROM users WHERE username='%s'", username);
@@ -210,6 +248,12 @@ public class DatabaseUsers extends PostgreSQL {
         return user;
     }
 
+    
+    /** 
+     * @param username
+     * @param password
+     * @return boolean
+     */
     public boolean validatePassword (String username, String password) {
         String selectSQLQuery = String.format ("SELECT password, salt FROM users WHERE username='%s'", username);
         try {
@@ -241,6 +285,11 @@ public class DatabaseUsers extends PostgreSQL {
         return false;
     }
 
+    
+    /** 
+     * @param username
+     * @return boolean
+     */
     public boolean removeUser (String username) {
         if (!doesUserExist(username)) {
             return false;

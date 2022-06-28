@@ -18,12 +18,17 @@ public class DatabaseUsersTest {
 
     @BeforeAll
     public static void OpenDatabase () {
-        db = new DatabaseUsers();
+        // Try to use AWS DB
+        db = new DatabaseUsers ("aws_db.json");
+
+        // If AWS does not work use local database
+        if (db.getConnection() == null) db = new DatabaseUsers();
     }
 
     @AfterAll
     public static void afterAll () {
-        db.closeConnection();
+        if (db != null && db.getConnection() != null)
+            db.closeConnection();
     }
 
     @Test
