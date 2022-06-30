@@ -3,7 +3,7 @@ package com.revature.courseapp.utils;
 /**
  * A dynamically allocated array.
  */
-public interface List <T> {
+public interface List <T>  {
     public int size();
     public boolean isEmpty();
     public void set (int index, T value);

@@ -70,43 +70,34 @@ public class DatabaseUsersTest {
         Student student2 = new Student ("John", "Test", "jotest", "jtest@email.com");
         Student student3 = new Student ("Jack", "Test", "jatest", "jtest@email.com");
         FacultyMember facultyMember = new FacultyMember("Fact", "Culty", "fculty", "fculty@email.com");
-        try {
-            byte[] salt = Encryption.generateSalt();
-            String pass = Encryption.generateEncryptedPassword("pass", salt);
-            DatabaseUsers.insertUser(db.getConnection(), student, pass, salt);
-            salt = Encryption.generateSalt();
-            pass = Encryption.generateEncryptedPassword("pass", salt);
-            DatabaseUsers.insertUser(db.getConnection(), student2, pass, salt);
-            salt = Encryption.generateSalt();
-            pass = Encryption.generateEncryptedPassword("pass", salt);
-            DatabaseUsers.insertUser(db.getConnection(), student3, pass, salt);
-            salt = Encryption.generateSalt();
-            pass = Encryption.generateEncryptedPassword("pass", salt);
-            DatabaseUsers.insertUser(db.getConnection(), facultyMember, pass, salt);
-        }
-        catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+        byte[] salt = Encryption.generateSalt();
+        String pass = Encryption.generateEncryptedPassword("pass", salt);
+        DatabaseUsers.insertUser(db.getConnection(), student, pass, salt);
+        salt = Encryption.generateSalt();
+        pass = Encryption.generateEncryptedPassword("pass", salt);
+        DatabaseUsers.insertUser(db.getConnection(), student2, pass, salt);
+        salt = Encryption.generateSalt();
+        pass = Encryption.generateEncryptedPassword("pass", salt);
+        DatabaseUsers.insertUser(db.getConnection(), student3, pass, salt);
+        salt = Encryption.generateSalt();
+        pass = Encryption.generateEncryptedPassword("pass", salt);
+        DatabaseUsers.insertUser(db.getConnection(), facultyMember, pass, salt);
     }
 
     @Test
     public void testValidatePassword () {
         Student student = new Student (202, "Vladimir", "Password", "vpass", "vpass@email.com");
-        try {
-            byte[] salt = Encryption.generateSalt();
-            String pass = Encryption.generateEncryptedPassword("pass", salt);
-            DatabaseUsers.insertUser(db.getConnection(), student, pass, salt);
-            assertTrue (DatabaseUsers.validatePassword(db.getConnection(), student.getUsername(), "pass"));
-            assertFalse (DatabaseUsers.validatePassword(db.getConnection(), student.getUsername(), "pas"));
-            assertFalse (DatabaseUsers.validatePassword(db.getConnection(), "notreal", "pas"));
-        }
-        catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+        byte[] salt = Encryption.generateSalt();
+        String pass = Encryption.generateEncryptedPassword("pass", salt);
+        DatabaseUsers.insertUser(db.getConnection(), student, pass, salt);
+        assertTrue (DatabaseUsers.validatePassword(db.getConnection(), student.getUsername(), "pass"));
+        assertFalse (DatabaseUsers.validatePassword(db.getConnection(), student.getUsername(), "pas"));
+        assertFalse (DatabaseUsers.validatePassword(db.getConnection(), "notreal", "pas"));
     }
 
     @Test
     void testGetAllEnrolledStudents() {
 
     }
+
 }

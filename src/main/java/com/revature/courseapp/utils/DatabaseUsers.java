@@ -199,7 +199,6 @@ public class DatabaseUsers extends DatabaseUtils {
             closeQuietly(preparedStatement);
         }
     }
-
     
     /** Retrieves the user from the database using a username
      * @param username

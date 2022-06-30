@@ -171,7 +171,7 @@ public class DatabaseCourses extends DatabaseUtils {
      * @param student
      * @return boolean
      */
-    public static boolean WithdrawCourse (Connection conn, Course course, Student student) {
+    public static boolean withdrawCourse (Connection conn, Course course, Student student) {
         String query = String.format ("DELETE FROM coursesusers WHERE course_id='%d' AND user_id='%d'", course.getId(), student.getId());
         Statement statement = null;
         try {
@@ -251,10 +251,7 @@ public class DatabaseCourses extends DatabaseUtils {
 
                     enrolledCourses.add(new Course(course_id, course_name, semester, capacity));
                 }
-                if (!userResult.next()) userResult.close();
             }
-            if (!result.next()) result.close();
-            statement.close();
         }
         catch (SQLException e) {
             e.printStackTrace();
@@ -266,5 +263,32 @@ public class DatabaseCourses extends DatabaseUtils {
             closeQuietly(userResult);
         }
         return enrolledCourses;
+    }
+
+    public static List<Course> getAllAvailableCourses (Connection conn) {
+        List<Course> availableCourses = new LinkedList<>();
+        String query = String.format ("SELECT course_id FROM courses order by course_id");
+
+        Statement statement = null;
+        ResultSet result = null;
+        try {
+            statement = conn.createStatement();
+            result = statement.executeQuery (query);
+            while (result.next()) {
+                int course_id = result.getInt ("course_id");
+                String course_name = result.getString("course_name");
+                String semester = result.getString("semester");
+                int capacity = result.getInt("capacity");
+                availableCourses.add(new Course(course_id, course_name, semester, capacity));
+        }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
+            closeQuietly(statement);
+            closeQuietly(result);
+        }
+        return availableCourses;
     }
 }
