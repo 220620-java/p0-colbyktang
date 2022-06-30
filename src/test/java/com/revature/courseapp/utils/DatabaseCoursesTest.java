@@ -11,15 +11,15 @@ import com.revature.courseapp.course.Course;
 
 public class DatabaseCoursesTest {
 
-    static DatabaseCourses db;
+    static PostgreSQL db;
 
     @BeforeAll
     public static void OpenDatabase () {
         // Try to use AWS DB
-        db = new DatabaseCourses ("aws_db.json");
+        db = new PostgreSQL("aws_db.json");
 
         // If AWS does not work use local database
-        if (db.getConnection() == null) db = new DatabaseCourses();
+        if (db.getConnection() == null) db = new PostgreSQL();
     }
 
     @AfterAll
@@ -30,7 +30,7 @@ public class DatabaseCoursesTest {
     @Test
     void testGetCourse() {
         Course course = new Course (101, "Introduction to Computer Science", "FALL 2022", 30);
-        assertEquals(course, db.getCourse(101));
+        assertEquals(course, DatabaseCourses.getCourse(db.getConnection(), 101));
     }
 
     @Test
@@ -43,9 +43,9 @@ public class DatabaseCoursesTest {
         Course course = new Course (101, "Introduction to Computer Science", "FALL 2022", 30);
         Course course2 = new Course (301, "Introduction to Electricity", "FALL 2022", 30);
         Course course3 = new Course (201, "Introduction to Technology", "FALL 2022", 30);
-        assertTrue(db.doesCourseExist(course));
-        assertTrue(db.doesCourseExist(course2));
-        assertTrue(db.doesCourseExist(course3));
+        assertTrue(DatabaseCourses.doesCourseExist(db.getConnection(), course));
+        assertTrue(DatabaseCourses.doesCourseExist(db.getConnection(), course2));
+        assertTrue(DatabaseCourses.doesCourseExist(db.getConnection(), course3));
     }
 
     @Test
@@ -55,15 +55,15 @@ public class DatabaseCoursesTest {
 
     @Test
     void testGetAllEnrolledCourses() {
-        List<Course> courses101 = db.getAllEnrolledCourses(101);
+        List<Course> courses101 = DatabaseCourses.getAllEnrolledCourses(db.getConnection(), 101);
         assertEquals (101, courses101.get(0).getId());
         assertEquals ("Introduction to Computer Science", courses101.get(0).getCourseName());
 
-        List<Course> courses102 = db.getAllEnrolledCourses(102);
+        List<Course> courses102 = DatabaseCourses.getAllEnrolledCourses(db.getConnection(), 102);
         assertEquals (101, courses102.get(0).getId());
         assertEquals ("Introduction to Computer Science", courses102.get(0).getCourseName());
 
-        List<Course> courses201 = db.getAllEnrolledCourses(201);
+        List<Course> courses201 = DatabaseCourses.getAllEnrolledCourses(db.getConnection(), 201);
         assertEquals (null, courses201.get(0));
 
     }

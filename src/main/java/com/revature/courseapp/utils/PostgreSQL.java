@@ -1,6 +1,5 @@
 package com.revature.courseapp.utils;
 
-// import software.aws.rds.jdbc.postgresql.Driver;
 import java.sql.*;
 import java.util.Properties;
 
@@ -9,10 +8,9 @@ import java.io.InputStream;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-// import org.postgresql.*;
 
 public class PostgreSQL {
-    public static String url;
+    protected String url;
     protected Connection conn;
     protected Properties props;
 
@@ -26,10 +24,9 @@ public class PostgreSQL {
     public PostgreSQL (String jsonFilename) {
         // Find and read json file for database credentials
         // Make sure the filename ends with .json
-        System.out.println("Create");
         String[] credentials = readDatabaseCredentials(jsonFilename);
         
-        // If credentials did not work then 
+        // If credentials work then 
         if (credentials != null) {
             setConnection("jdbc:postgresql://" + credentials[0] + ":5432/", credentials[1], credentials[2], "false");
             System.out.println("Using remote database!");
@@ -41,7 +38,6 @@ public class PostgreSQL {
         setConnection(sqlUrl, user, password, ssl);
     }
 
-    
     /** 
      * @return Connection
      */
@@ -49,7 +45,6 @@ public class PostgreSQL {
     public Connection getConnection () {
         return conn;
     }
-
     
     /** 
      * @param sqlUrl
@@ -78,7 +73,7 @@ public class PostgreSQL {
         return null;
     }
 
-    public void closeConnection () {
+    public static void closeConnection (Connection conn) {
         try {
             if (conn != null)
                 conn.close();
@@ -88,31 +83,19 @@ public class PostgreSQL {
         }
     }
 
-    
-    /** 
-     * @param tableName
-     */
-    // Clears a table
-    public void truncateTable (String tableName) {
-        try {
-            Statement statement = conn.createStatement();
-            String truncateSQLQuery = String.format ("Truncate table %s CASCADE", tableName);
-            statement.execute(truncateSQLQuery);
-            statement.close();
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-            return;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-        System.out.println(String.format ("%s Table truncated.", tableName));
+    public void closeConnection () {
+        closeConnection (conn);
     }
 
-    
-    /** 
+    /**
+     * Retrieves the jdbc url used to connect to the database.
+     * @return String - the url
+     */
+    public String getUrl () {
+        return url;
+    }
+
+    /** Reads a json file in /src/main/resources for the database credentials.
      * @param jsonFilename
      * @return String[]
      * @throws JSONException
@@ -154,6 +137,7 @@ public class PostgreSQL {
         }
         return credentials;
     }
+
 
 }
 

@@ -6,14 +6,12 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 public class Encryption {
-
-    
-    /** 
-     * @param password
-     * @param salt
+    /** Generate an encrypted password with a SHA-512 salt.
+     * @param password The password to be converted into SHA-512.
+     * @param salt The salt for encrypting.
      * @return String
      */
-    public static String generateEncryptedPassword (String password, byte[] salt) {
+    public static String generateEncryptedPassword (String password, byte[] salt) throws NoSuchAlgorithmException {
         String encryptedPassword = "";
         try {
             // Choose SHA-512 for the algorithm
@@ -39,7 +37,7 @@ public class Encryption {
     }
 
     
-    /** 
+    /** Generates a SHA salt to be used with encrypting passwords.
      * @return byte[]
      * @throws NoSuchAlgorithmException
      */

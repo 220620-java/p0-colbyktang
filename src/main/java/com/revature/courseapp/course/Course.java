@@ -4,9 +4,10 @@ import com.revature.courseapp.user.Student;
 import com.revature.courseapp.utils.*;
 
 /**
-*
+* A course is a college course that takes place during a semester (e.g. FALL 2022). 
+* Students will be enrolled into the course restricted by a certain capacity.
 * @author Colby Tang
-* 
+* @version 1.0
 */
 public class Course {
     protected int courseId;
@@ -14,10 +15,11 @@ public class Course {
     protected String semester;
     protected int capacity;
     protected List<Student> enrolledStudents = new LinkedList<Student>();
-
     
     /** 
-     * @return int
+     * Course ID is manually set during instantiation.
+     * @return int - The course id.
+     * 
      */
     public int getId () {
         return courseId;
@@ -25,7 +27,7 @@ public class Course {
 
     
     /** 
-     * @return String
+     * @return String - The name of the course.
      */
     public String getCourseName() {
         return courseName;
@@ -33,7 +35,7 @@ public class Course {
 
     
     /** 
-     * @param courseName
+     * @param courseName - The name of the course.
      */
     public void setCourseName(String courseName) {
         this.courseName = courseName;
@@ -41,7 +43,7 @@ public class Course {
 
     
     /** 
-     * @return String
+     * @return String - The semester (e.g. FALL 2022).
      */
     public String getSemester() {
         return semester;
@@ -49,7 +51,7 @@ public class Course {
 
     
     /** 
-     * @param semester
+     * @param semester - The semester (e.g. FALL 2022).
      */
     public void setSemester(String semester) {
         this.semester = semester;
@@ -57,7 +59,7 @@ public class Course {
 
     
     /** 
-     * @return int
+     * @return int - The capacity of a class before it gets full.
      */
     public int getCapacity() {
         return capacity;
@@ -65,12 +67,19 @@ public class Course {
 
     
     /** 
-     * @param capacity
+     * @param capacity - Sets the capacity of the class.
      */
     public void setCapacity(int capacity) {
         this.capacity = capacity;
     }
 
+    /**
+     * Constructor for initializing a course with NO students
+     * @param id
+     * @param name
+     * @param semester
+     * @param capacity
+     */
     public Course (int id, String name, String semester, int capacity) {
         this.courseId = id;
         this.courseName = name;
@@ -78,6 +87,14 @@ public class Course {
         this.capacity = capacity;
     }
 
+    /**
+     * Constructor for initializing a course with students
+     * @param id
+     * @param name
+     * @param semester
+     * @param capacity
+     * @param students
+     */
     public Course (int id, String name, String semester, int capacity, List<Student> students) {
         this.courseId = id;
         this.courseName = name;
@@ -88,6 +105,7 @@ public class Course {
 
     
     /** 
+     * Checks to see if the amount of enrolled students is at or over the capacity.
      * @return boolean
      */
     public boolean isFull () {
@@ -96,6 +114,7 @@ public class Course {
 
     
     /** 
+     * Get the number of students enrolled in the class.
      * @return int
      */
     public int getNumberOfStudents () {
@@ -104,6 +123,7 @@ public class Course {
 
     
     /** 
+     * Get a list of enrolled students in the course.
      * @return List<Student>
      */
     public List<Student> getEnrolledStudents () {
@@ -112,7 +132,8 @@ public class Course {
 
     
     /** 
-     * @param students
+     * Set a list of students enrolled in the course.
+     * @param students - A list of students
      */
     public void setEnrolledStudents (List<Student> students) {
         enrolledStudents = students;
@@ -120,7 +141,8 @@ public class Course {
 
     
     /** 
-     * @param student
+     * Checks to see if student is in the course
+     * @param student - The student object to check for.
      * @return boolean
      */
     public boolean isStudentInCourse (Student student) {
@@ -129,7 +151,9 @@ public class Course {
 
     
     /** 
-     * @param student
+     * Registers the student into the course. 
+     * Checks if the student is already in the course or not.
+     * @param student - The student object enrolling in the course.
      */
     public void registerCourse (Student student) {
         if (!isStudentInCourse(student)) {
@@ -137,7 +161,10 @@ public class Course {
         } 
     }
 
-    private static final String ToStringTemplate = "CourseID: = %d, Course Name = %2s, Semester = %3s, Capacity = %d, EnrolledStudents = %s";
+    /**
+     * A string template for toString.
+     */
+    private static final String ToStringTemplate = "CourseID: = %d, Course Name = %s, Semester = %s, Capacity = %d, EnrolledStudents = %s";
 
     
     /** 

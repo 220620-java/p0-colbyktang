@@ -5,6 +5,12 @@ package com.revature.courseapp.user;
 
 import java.util.Objects;
 
+/**
+* A user is a representation of the client. They contain personal information about the user such as their name and email.
+* When creating a user without an id, an id will be automatically assigned to the user. 
+* @author Colby Tang
+* @version 1.0
+*/
 public abstract class User {
     public enum UserType {
         STUDENT,

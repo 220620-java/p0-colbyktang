@@ -1,5 +1,8 @@
 package com.revature.courseapp.utils;
 
+/**
+ * A dynamically allocated array.
+ */
 public interface List <T> {
     public int size();
     public boolean isEmpty();

@@ -31,11 +31,11 @@
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
-        <dependency>
+        <!-- <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.4.0</version>
-        </dependency>
+        </dependency> -->
 
 		<!-- import postgresql aws jdbc -->
         <dependency>
@@ -50,11 +50,11 @@
             <artifactId>json</artifactId>
             <version>20200518</version>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
             <version>1.1.1</version>
-        </dependency>
+        </dependency> -->
         
 	</dependencies>
 
@@ -73,6 +73,16 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>3.7.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <doclint>none</doclint>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
             </plugin>
 		</plugins>
 	</build>

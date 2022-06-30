@@ -5,48 +5,39 @@ import java.sql.*;
 import com.revature.courseapp.course.*;
 import com.revature.courseapp.user.Student;
 
-public class DatabaseCourses extends PostgreSQL {
+public class DatabaseCourses extends DatabaseUtils {
 
-    public DatabaseCourses () {
-        super();
-    }
-
-    public DatabaseCourses (String jsonFilename) {
-        super(jsonFilename);
-    }
-    
-    /** 
+    /** Checks if course already exists in the table.
      * @param course
      * @return boolean
      */
     // Make sure course doesn't already exist
-    public boolean doesCourseExist (Course course) {
+    public static boolean doesCourseExist (Connection conn, Course course) {
         String query = String.format (
             "SELECT * FROM courses WHERE course_name='%s'", 
             course.getCourseName()
         );
 
+        Statement statement = null;
+        ResultSet resultSet = null;
         try {
-            Statement statement = conn.createStatement();
-            ResultSet result = statement.executeQuery(query);
+            statement = conn.createStatement();
+            resultSet = statement.executeQuery(query);
 
             // Found result, return true
-            while (result.next()) {
-                System.out.println(result.getInt("course_id") + " already exists!");
-                result.close();
-                statement.close();
+            if (resultSet.next()) {
+                System.out.println(resultSet.getInt("course_id") + " already exists!");
                 return true;
             }
-            result.close();
-            statement.close();
             return false;
         }
         catch (SQLException e) {
             e.printStackTrace();
 
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        finally {
+            closeQuietly(statement);
+            closeQuietly(resultSet);
         }
         return false;
     }
@@ -55,9 +46,9 @@ public class DatabaseCourses extends PostgreSQL {
     /** 
      * @param course
      */
-    public void insertCourse (Course course) {
+    public static void insertCourse (Connection conn, Course course) {
         // Check if user is already in the database
-        if (doesCourseExist(course)) {
+        if (doesCourseExist(conn, course)) {
             System.out.println("Course already exists!");
             return;
         }
@@ -66,9 +57,10 @@ public class DatabaseCourses extends PostgreSQL {
         "  (course_id, course_name, semester, capacity, size) VALUES " +
         " (?, ?, ?, ?, ?);";
 
+        PreparedStatement preparedStatement = null;
         try {
             // Prepare the statement for execution by filling user object fields
-            PreparedStatement preparedStatement = conn.prepareStatement(query);
+            preparedStatement = conn.prepareStatement(query);
             preparedStatement.setInt(1, course.getId());
             preparedStatement.setString(2, course.getCourseName());
             preparedStatement.setString(3, course.getSemester());
@@ -85,6 +77,9 @@ public class DatabaseCourses extends PostgreSQL {
         catch (Exception e) {
             e.printStackTrace();
         }
+        finally {
+            closeQuietly(preparedStatement);
+        }
     }
 
     
@@ -92,14 +87,15 @@ public class DatabaseCourses extends PostgreSQL {
      * @param course
      * @return boolean
      */
-    public boolean removeCourse (Course course) {
-        if (!doesCourseExist(course)) {
+    public static boolean removeCourse (Connection conn, Course course) {
+        if (!doesCourseExist(conn, course)) {
             return false;
         }
 
         String query = String.format ("DELETE FROM courses WHERE course_name='%s'", course.getCourseName());
+        Statement statement = null;
         try {
-            Statement statement = conn.createStatement();
+            statement = conn.createStatement();
             statement.executeUpdate(query);
             statement.close();
             return true;
@@ -110,6 +106,9 @@ public class DatabaseCourses extends PostgreSQL {
         }
         catch (Exception e) {
             e.printStackTrace();
+        }
+        finally {
+            closeQuietly(statement);
         }
         return false;
     }
@@ -119,42 +118,50 @@ public class DatabaseCourses extends PostgreSQL {
      * @param course
      * @param student
      */
-    public void enrollCourse (Course course, Student student) {
-        try {
-            Statement statement = conn.createStatement();
+    public static void enrollCourse (Connection conn, Course course, Student student) {
+        if (!doesCourseExist(conn, course)) {
+            return;
+        }
+
+        Statement statement = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet courseResult = null;
+        ResultSet userResult = null;
+        try {;
+            statement = conn.createStatement();
 
             String courseQuery = String.format ("SELECT course_id FROM courses WHERE course_id='%d'", course.getId());
-            ResultSet courseResult = statement.executeQuery(courseQuery);
+            courseResult = statement.executeQuery(courseQuery);
             int courseId = -1;
             while (courseResult.next()) {
                 courseId = courseResult.getInt("course_id");
             }
             if (courseId == -1) { return; }
 
-            courseResult.close();
-
             String userQuery = String.format ("SELECT user_id FROM users WHERE user_id='%d'", student.getId());
-            ResultSet userResult = statement.executeQuery(userQuery);
+            userResult = statement.executeQuery(userQuery);
             int userId = -1;
             while (userResult.next()) {
                 userId = userResult.getInt("user_id");
             }
             if (userId == -1) { return; }
 
-            userResult.close();
-            statement.close();
-
             String courseUserQuery = "INSERT INTO coursesusers (course_id, user_id) VALUES (?, ?)";
-            PreparedStatement preparedStatement = conn.prepareStatement(courseUserQuery);
+            preparedStatement = conn.prepareStatement(courseUserQuery);
             preparedStatement.setInt(1, courseId);
             preparedStatement.setInt(2, userId);
 
             // Execute statement
             preparedStatement.executeUpdate();
-            preparedStatement.close();
         }
         catch (SQLException e) {
             e.printStackTrace();
+        }
+        finally {
+            closeQuietly(statement);
+            closeQuietly(preparedStatement);
+            closeQuietly(courseResult);
+            closeQuietly(userResult);
         }
     }
 
@@ -164,10 +171,11 @@ public class DatabaseCourses extends PostgreSQL {
      * @param student
      * @return boolean
      */
-    public boolean WithdrawCourse (Course course, Student student) {
+    public static boolean WithdrawCourse (Connection conn, Course course, Student student) {
         String query = String.format ("DELETE FROM coursesusers WHERE course_id='%d' AND user_id='%d'", course.getId(), student.getId());
+        Statement statement = null;
         try {
-            Statement statement = conn.createStatement();
+            statement = conn.createStatement();
             statement.executeUpdate(query);
             statement.close();
             return true;
@@ -178,6 +186,9 @@ public class DatabaseCourses extends PostgreSQL {
         }
         catch (Exception e) {
             e.printStackTrace();
+        }
+        finally {
+            closeQuietly(statement);
         }
         return false;
     }
@@ -187,7 +198,7 @@ public class DatabaseCourses extends PostgreSQL {
      * @param course_id
      * @return Course
      */
-    public Course getCourse (int course_id) {
+    public static Course getCourse (Connection conn, int course_id) {
         String query = String.format ("SELECT * FROM courses WHERE course_id=%d", course_id);
         Statement statement = null;
         ResultSet result = null;
@@ -206,8 +217,8 @@ public class DatabaseCourses extends PostgreSQL {
             e.printStackTrace();
         }
         finally {
-            try { if (result != null) result.close(); } catch (Exception e) {e.printStackTrace();};
-            try { if (statement != null) statement.close(); } catch (Exception e) {e.printStackTrace();};
+            closeQuietly(statement);
+            closeQuietly(result);
         }
         return null;
     }
@@ -217,20 +228,21 @@ public class DatabaseCourses extends PostgreSQL {
      * @param student_id
      * @return List<Course>
      */
-    public List<Course> getAllEnrolledCourses (int student_id) {
+    public static List<Course> getAllEnrolledCourses (Connection conn, int student_id) {
         List<Course> enrolledCourses = new LinkedList<>();
         String query = String.format ("SELECT course_id FROM coursesusers WHERE user_id=%d", student_id);
 
-        ResultSet result = null;
-        ResultSet userResult = null;
         Statement statement = null;
+        ResultSet result = null;
+        Statement userStatement = null;
+        ResultSet userResult = null;
         try {
             statement = conn.createStatement();
             result = statement.executeQuery (query);
             while (result.next()) {
                 int course_id = result.getInt ("course_id");
                 query = String.format ("SELECT * FROM courses WHERE course_id=%d", course_id);
-                Statement userStatement = conn.createStatement();
+                userStatement = conn.createStatement();
                 userResult = userStatement.executeQuery(query);
                 while (userResult.next()) {
                     String course_name = userResult.getString("course_name");
@@ -248,8 +260,10 @@ public class DatabaseCourses extends PostgreSQL {
             e.printStackTrace();
         }
         finally {
-            try { if (result != null) result.close(); } catch (Exception e) {e.printStackTrace();};
-            try { if (statement != null) statement.close(); } catch (Exception e) {e.printStackTrace();};
+            closeQuietly(statement);
+            closeQuietly(result);
+            closeQuietly(statement);
+            closeQuietly(userResult);
         }
         return enrolledCourses;
     }
