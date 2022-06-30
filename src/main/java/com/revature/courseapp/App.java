@@ -37,7 +37,10 @@ import java.util.Scanner;
 import com.revature.courseapp.utils.DatabaseCourses;
 import com.revature.courseapp.utils.DatabaseUsers;
 import com.revature.courseapp.utils.Encryption;
+import com.revature.courseapp.utils.List;
 import com.revature.courseapp.utils.PostgreSQL;
+import com.revature.courseapp.course.Course;
+import com.revature.courseapp.user.FacultyMember;
 import com.revature.courseapp.user.Student;
 import com.revature.courseapp.user.User;
 
@@ -143,61 +146,13 @@ public class App {
                 return 2;
             case 3:
                 return 3;
+            case 4:
+                FacultyMember user = new FacultyMember(201, "Colby", "Tang", "ctang2", "ctang2@email.com");
+                byte[] salt = Encryption.generateSalt();
+                String pass = Encryption.generateEncryptedPassword("pass", salt);
+                DatabaseUsers.insertUser(db.getConnection(), user, pass, salt);
         }
-        return 3;
-    }
-
-    
-    /** 
-     * @return int
-     */
-    public static int StudentMenu () {
-        System.out.println("Student Menu");
-        System.out.println("1. View Available Classes");
-        System.out.println("2. Enroll Class");
-        System.out.println("3. Display Registered Classes");
-        System.out.println("4. Cancel Class Enrollment");
-        System.out.println("5. Logout");
-
-        int input = 0;
-        input = scanner.nextInt();
-        scanner.nextLine();
-        switch (input) {
-            case 1:
-                return 1;
-            case 2:
-                return 2;
-            case 3:
-                return -1;
-        }
-        return 3;
-    }
-
-    
-    /** 
-     * @return int
-     */
-    public static int FacultyMenu () {
-        System.out.println("Faculty Menu");
-        System.out.println("1. Add New Classes");
-        System.out.println("2. Change Class Details");
-        System.out.println("3. Remove a Class");
-        System.out.println("4. Logout");
-
-        int input = 0;
-        input = scanner.nextInt();
-        switch (input) {
-            case 1:
-                scanner.close();
-                return 1;
-            case 2:
-                scanner.close();
-                return 2;
-            case 3:
-                scanner.close();
-                return -1;
-        }
-        return 3;
+        return -1;
     }
 
     public static boolean userLogin () {
@@ -275,15 +230,90 @@ public class App {
         System.out.println(student);
 
         // Add student to the database
-        
-        try {
-            byte[] salt = Encryption.generateSalt();
-            String pass = Encryption.generateEncryptedPassword(password, salt);
-            DatabaseUsers.insertUser(db.getConnection(), student, pass, salt);
-            System.out.println(String.format ("Created student %s %s. ID: %d", firstName, lastName, student.getId()));
-        }
-        catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+        byte[] salt = Encryption.generateSalt();
+        String pass = Encryption.generateEncryptedPassword(password, salt);
+        DatabaseUsers.insertUser(db.getConnection(), student, pass, salt);
+        System.out.println(String.format ("Created student %s %s. ID: %d", firstName, lastName, student.getId()));
     }
+    
+    /** 
+     * @return int
+     */
+    public static int StudentMenu () {
+        System.out.println("Student Menu");
+        System.out.println("1. View Available Classes");
+        System.out.println("2. Enroll Class");
+        System.out.println("3. Display Registered Classes");
+        System.out.println("4. Cancel Class Enrollment");
+        System.out.println("5. Logout");
+
+        int input = 0;
+        input = scanner.nextInt();
+        scanner.nextLine();
+        switch (input) {
+            case 1:
+            userViewClasses();
+                return 1;
+            case 2:
+                return 2;
+            case 3:
+                return -1;
+            case 5:
+                isLoggedIn = false;
+                return -1;
+        }
+        return -1;
+    }
+
+    public static void userViewClasses () {
+        System.out.println("Viewing Available Classes...");
+        List<Course> courses = DatabaseCourses.getAllAvailableCourses(db.getConnection());
+        if (courses.size() == 0) {
+            System.out.println("NO AVAILABLE CLASSES!");
+            return;
+        }
+        for (int i = 0; i < courses.size(); i++) {
+            Course course = courses.get(i);
+            String printString = String.format(
+                "%d: %s [%d/%d]", 
+                course.getId(), 
+                course.getCourseName(), 
+                course.getNumberOfStudents(), 
+                course.getCapacity()
+                );
+            System.out.println(printString);
+        }
+        return;
+    }
+
+    
+    /** 
+     * @return int
+     */
+    public static int FacultyMenu () {
+        System.out.println("Faculty Menu");
+        System.out.println("1. Add New Classes");
+        System.out.println("2. Change Class Details");
+        System.out.println("3. Remove a Class");
+        System.out.println("4. Logout");
+
+        int input = 0;
+        input = scanner.nextInt();
+        switch (input) {
+            case 1:
+                return 1;
+            case 2:
+                return 2;
+            case 3:
+                return -1;
+            case 4:
+                isLoggedIn = false;
+                return -1;
+        }
+        return -1;
+    }
+
+
+
+
 }
