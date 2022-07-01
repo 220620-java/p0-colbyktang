@@ -158,7 +158,7 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
     @Override
     public User findByUsername(String username) {
         User user = null;
-        String query = "SELECT * FROM users WHERE user_id=?";
+        String query = "SELECT * FROM users WHERE username=?";
         PreparedStatement preparedStatement = null;
         ResultSet result = null;
         try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
