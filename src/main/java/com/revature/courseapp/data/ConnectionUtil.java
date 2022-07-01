@@ -60,9 +60,7 @@ public class ConnectionUtil {
      */
     // Get the connection that's opened
     public Connection getCurrentConnection () {
-        if (conn == null) {
-            conn = openConnection ("remote_db.json");
-        }
+        conn = openConnection ("remote_db.json");
         return conn;
     }
 
