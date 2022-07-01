@@ -1,9 +1,6 @@
 package com.revature.courseapp;
 import java.io.Console;
-import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
-
-import org.w3c.dom.UserDataHandler;
 
 import com.revature.courseapp.utils.Encryption;
 import com.revature.courseapp.utils.List;
@@ -133,7 +130,7 @@ public class App {
         }
         System.out.println("EXITING APPLICATION!");
         scanner.close();
-        getDB().closeConnection();
+        ConnectionUtil.getConnectionUtil().closeConnection();
     }
 
     
@@ -371,6 +368,7 @@ public class App {
 
         int input = 0;
         input = scanner.nextInt();
+        scanner.nextLine();
         switch (input) {
             case 1:
                 facultyAddNewClass();
@@ -410,7 +408,6 @@ public class App {
         Course course = new Course (course_id, course_name, semester, capacity);
         System.out.println("Adding new course " + course_id + "...");
         courseDAO.create(course);
-        scanner.close();
     }
 
     public static void facultyChangeClassDetails () {
@@ -435,7 +432,6 @@ public class App {
         course.setSemester(semester);
         course.setCapacity(capacity);
         courseDAO.update(course);
-        scanner.close();
     }
 
     public static void facultyRemoveClass () {
@@ -444,7 +440,5 @@ public class App {
         String input = scanner.nextLine();
         int course_id = Integer.parseInt(input);
         courseDAO.delete(course_id);
-
-        scanner.close();
     }
 }
