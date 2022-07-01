@@ -248,7 +248,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
      */
     public List<Course> getAllEnrolledCourses (int student_id) {
         List<Course> enrolledCourses = new LinkedList<>();
-        String query = "SELECT course_id FROM coursesusers WHERE user_id=?";
+        String query = "SELECT course_id FROM courses_users WHERE user_id=?";
 
         PreparedStatement preparedStatement = null;
         ResultSet result = null;
@@ -346,7 +346,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
      * @return boolean
      */
     public boolean withdrawFromCourse (int course_id, int student_id) {
-        String query = "DELETE FROM coursesusers WHERE course_id=? AND user_id=?";
+        String query = "DELETE FROM courses_users WHERE course_id=? AND user_id=?";
         PreparedStatement preparedStatement = null;
         try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
             preparedStatement = conn.prepareStatement(query);
