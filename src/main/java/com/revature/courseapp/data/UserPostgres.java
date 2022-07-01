@@ -106,8 +106,8 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         return null;
     }
 
-    /** Retrieves the user from the database using a username
-     * @param username
+    /** Retrieves the user from the database using a id
+     * @param user_id
      * @return User
      */
     @Override
@@ -124,6 +124,51 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
                 String firstname = result.getString("first_name");
                 String lastname = result.getString("last_name");
                 String username = result.getString("username");
+                String email = result.getString("email");
+                String usertype = result.getString("usertype");
+                if (usertype.equals("STUDENT")) {
+                    user = new Student (user_id, firstname, lastname, username, email);
+                }
+                if (usertype.equals("FACULTY")) {
+                    user = new FacultyMember (user_id, firstname, lastname, username, email);
+                }
+
+                System.out.println("RETURNING " + user);
+                return user;
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            closeQuietly(preparedStatement);
+            closeQuietly(result);
+        }
+        return user;
+    }
+
+    /** Retrieves the user from the database using a username
+     * @param username
+     * @return User
+     */
+    @Override
+    public User findByUsername(String username) {
+        User user = null;
+        String query = "SELECT * FROM users WHERE user_id=?";
+        PreparedStatement preparedStatement = null;
+        ResultSet result = null;
+        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
+            preparedStatement = conn.prepareStatement(query);
+            preparedStatement.setString(1, username);
+            result = preparedStatement.executeQuery();
+            if (result.next()) {
+                int user_id = result.getInt ("user_id");
+                String firstname = result.getString("first_name");
+                String lastname = result.getString("last_name");
                 String email = result.getString("email");
                 String usertype = result.getString("usertype");
                 if (usertype.equals("STUDENT")) {

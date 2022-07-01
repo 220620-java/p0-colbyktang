@@ -47,7 +47,7 @@ public abstract class DatabaseUtils {
     /** Clears a table
      * @param tableName
      */
-    public void truncateTable (String tableName) {
+    public static void truncateTable (String tableName) {
         PreparedStatement preparedStatement = null;
         try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
             String truncateSQLQuery = String.format ("Truncate table ? CASCADE");

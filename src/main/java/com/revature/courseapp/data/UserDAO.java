@@ -12,6 +12,12 @@ public interface UserDAO extends DataAccessObject<User> {
      */
     public User create(User user, String pass, byte[] salt);
 
+    /** Retrieves the user from the database using a username
+     * @param username
+     * @return User
+     */
+    public User findByUsername(String username);
+
     /** Checks the users table to see if user exists using both user id and username.
      * @param userid
      * @param username

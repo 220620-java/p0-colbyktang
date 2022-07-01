@@ -122,7 +122,6 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
 
     /** Removes a course from the catalog. It should also delete any students enrolled into the class.
      * @param course
-     * @return boolean
      */
     @Override
     public void delete(Course course) {
@@ -135,6 +134,35 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setInt(1, course.getId());
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            closeQuietly(preparedStatement);
+        }
+    }
+
+    /** Removes a course from the catalog. It should also delete any students enrolled into the class.
+     * @param course
+     */
+    @Override
+    public void delete(int course_id) {
+        if (!doesCourseExist(course_id)) {
+            return;
+        }
+
+        String query = "DELETE FROM courses WHERE course_id=?";
+        PreparedStatement preparedStatement = null;
+        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
+            preparedStatement = conn.prepareStatement(query);
+            preparedStatement.setInt(1, course_id);
             preparedStatement.executeUpdate();
             preparedStatement.close();
         }
