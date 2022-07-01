@@ -64,6 +64,11 @@ public class ConnectionUtil {
         return conn;
     }
 
+    /**
+     * Creates a new connection to the database.
+     * @param jsonFilename
+     * @return
+     */
     public Connection openConnection (String jsonFilename) {
         props = new Properties();
         try {
@@ -79,7 +84,7 @@ public class ConnectionUtil {
             props.setProperty("ssl", ssl);
 
             String url = String.format ("jdbc:postgresql://%s:5432/", endpoint);
-            System.out.println("Using remote database!");
+            System.out.println("Establishing connection to remote database...");
             return DriverManager.getConnection(url, props);
         }
         catch (SQLException e) {
@@ -96,7 +101,7 @@ public class ConnectionUtil {
                 props.setProperty("ssl", ssl);
 
                 String url = String.format ("jdbc:postgresql://%s:5432/", endpoint);
-                System.out.println("Using local database!");
+                System.out.println("Establishing connection to local database...");
                 return DriverManager.getConnection(url, props);
             }
             catch (SQLException ex) {

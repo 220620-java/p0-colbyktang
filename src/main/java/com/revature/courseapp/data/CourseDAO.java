@@ -33,6 +33,4 @@ public interface CourseDAO extends DataAccessObject<Course>{
      * @return boolean
      */
     public boolean withdrawFromCourse (int course_id, int student_id);
-
-
 }

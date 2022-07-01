@@ -50,22 +50,19 @@ public class UserTest {
 
     @Test 
     public void StudentHashCode() {
-        Student student = new Student(
+        Student student = new Student(101,
             "John", 
             "Smith", 
             "jsmith", 
             "jsmith@email.com"
         );
-        User.resetNextID();
 
-        Student student2 = new Student(
+        Student student2 = new Student(101,
             "John", 
             "Smith", 
             "jsmith", 
             "jsmith@email.com"
         );
-        User.resetNextID();
-        
         assertTrue(student.hashCode() == student2.hashCode());
     }
 

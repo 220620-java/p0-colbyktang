@@ -439,49 +439,6 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         }
         return enrolledStudents;
     }
-    
-    /** Inserts a user into the database, checks if the user already exists first.
-     * @param user
-     * @param pass
-     * @param salt
-     */
-    // public static void insertUser (Connection conn, User user, String pass, byte[] salt) {
-    //     // Check if user is already in the database
-    //     if (doesUserExist (conn, user.getId(), user.getUsername())) {
-    //         System.out.println("User already exists!");
-    //         return;
-    //     }
-
-    //     String insertSQLQuery = "INSERT INTO users" +
-    //     "  (user_id, first_name, last_name, username, email, usertype, password, salt) VALUES " +
-    //     " (?, ?, ?, ?, ?, ?, ?, ?);";
-    //     PreparedStatement preparedStatement = null;
-    //     try {
-    //         // Prepare the statement for execution by filling user object fields
-    //         preparedStatement = conn.prepareStatement(insertSQLQuery);
-    //         preparedStatement.setInt(1, user.getId());
-    //         preparedStatement.setString(2, user.getFirstName());
-    //         preparedStatement.setString(3, user.getLastName());
-    //         preparedStatement.setString(4, user.getUsername());
-    //         preparedStatement.setString(5, user.getEmail());
-    //         preparedStatement.setString(6, user.getUserType().toString());
-    //         preparedStatement.setString(7, pass);
-    //         preparedStatement.setBytes(8, salt);
-
-    //         // Execute statement
-    //         preparedStatement.executeUpdate();
-    //         preparedStatement.close();
-    //     }
-    //     catch (SQLException e) {
-    //         e.printStackTrace();
-    //     }
-    //     catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
-    //     finally {
-    //         closeQuietly(preparedStatement);
-    //     }
-    // }
        
     /** Validates a password using a username and password. Password will be encrypted and salted to match the given password.
      * @param username

@@ -39,7 +39,11 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
             preparedStatement.setInt(5, course.getNumberOfStudents());
 
             // Execute preparedStatement
+            System.out.println(
+                String.format("Creating new course: \n %s", course.toString())
+            );
             preparedStatement.executeUpdate();
+            System.out.println("Created new course!");
             preparedStatement.close();
             return course;
         }
@@ -186,7 +190,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
     @Override
     public List<Course> findAll() {
         List<Course> availableCourses = new LinkedList<>();
-        String query = String.format ("SELECT course_id FROM courses order by course_id");
+        String query = String.format ("SELECT * FROM courses order by course_id");
 
         Statement statement = null;
         ResultSet result = null;
@@ -296,47 +300,32 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
 
         PreparedStatement preparedStatement = null;
-        // ResultSet courseResult = null;
-        // ResultSet userResult = null;
         try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {;
-            /*
-            preparedStatement = conn.prepareStatement(query);
-
-           
-            String courseQuery = String.format ("SELECT course_id FROM courses WHERE course_id='%d'", course.getId());
-            courseResult = preparedStatement.executeQuery(courseQuery);
-            int courseId = -1;
-            while (courseResult.next()) {
-                courseId = courseResult.getInt("course_id");
-            }
-            if (courseId == -1) { return; }
-
-            String userQuery = String.format ("SELECT user_id FROM users WHERE user_id='%d'", student.getId());
-            userResult = preparedStatement.executeQuery(userQuery);
-            int userId = -1;
-            while (userResult.next()) {
-                userId = userResult.getInt("user_id");
-            }
-            if (userId == -1) { return; }
-
-            */
-
             String courseUserQuery = "INSERT INTO courses_users (course_id, user_id) VALUES (?, ?)";
             preparedStatement = conn.prepareStatement(courseUserQuery);
             preparedStatement.setInt(1, course_id);
             preparedStatement.setInt(2, student_id);
 
             // Execute preparedStatement
+            System.out.println(String.format("Enrolling user %d into course %d...", student_id, course_id));
             preparedStatement.executeUpdate();
+            preparedStatement.close();
+            System.out.println("Enrolled user!");
+
+            // Increase the size of the course
+            String query = "UPDATE courses SET " +
+                "size=size+1" +
+                "WHERE course_id=?";
+            preparedStatement = conn.prepareStatement(query);
+            preparedStatement.setInt(1, course_id);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
         }
         catch (SQLException e) {
             e.printStackTrace();
         }
         finally {
             closeQuietly(preparedStatement);
-            closeQuietly(preparedStatement);
-            // closeQuietly(courseResult);
-            // closeQuietly(userResult);
         }
     }
     
@@ -354,11 +343,19 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
             preparedStatement.setInt(2, student_id);
             preparedStatement.executeUpdate();
             preparedStatement.close();
+
+            // Decrease the size of the course
+            query = "UPDATE courses SET " +
+                "size=size-1" +
+                "WHERE course_id=?";
+            preparedStatement = conn.prepareStatement(query);
+            preparedStatement.setInt(1, course_id);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
             return true;
         }
         catch (SQLException e) {
             e.printStackTrace();
-
         }
         catch (Exception e) {
             e.printStackTrace();
