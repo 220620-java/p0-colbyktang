@@ -361,29 +361,41 @@ public class App {
      */
     public static int FacultyMenu () {
         System.out.println("Faculty Menu");
-        System.out.println("1. Add New Classes");
-        System.out.println("2. Change Class Details");
-        System.out.println("3. Remove a Class");
-        System.out.println("4. Logout");
+        System.out.println("1. View All Classes");
+        System.out.println("2. Add New Class");
+        System.out.println("3. Change Class Details");
+        System.out.println("4. Remove a Class");
+        System.out.println("5. Logout");
 
         int input = 0;
         input = scanner.nextInt();
         scanner.nextLine();
         switch (input) {
             case 1:
-                facultyAddNewClass();
+                facultyViewClasses();
                 return 1;
             case 2:
-                facultyChangeClassDetails ();
+                facultyAddNewClass();
                 return 2;
             case 3:
-            facultyRemoveClass ();
+                facultyChangeClassDetails ();
                 return 3;
             case 4:
+            facultyRemoveClass ();
+                return 4;
+            case 5:
                 isLoggedIn = false;
                 return -1;
         }
         return -1;
+    }
+
+    public static void facultyViewClasses() {
+        List<Course> allCourses = courseDAO.findAll();
+        System.out.println("Displaying all classes...");
+        for (int i = 0; i < allCourses.size(); i++) {
+            System.out.println(allCourses.get(i));
+        }
     }
 
     public static void facultyAddNewClass () {
