@@ -1,10 +1,16 @@
 // Project 0
 // Made by Colby Tang for Revature
 
-package com.revature.courseapp.user;
+package com.revature.courseapp.models;
 
 import java.util.Objects;
 
+/**
+* A user is a representation of the client. They contain personal information about the user such as their name and email.
+* When creating a user without an id, an id will be automatically assigned to the user. 
+* @author Colby Tang
+* @version 1.0
+*/
 public abstract class User {
     public enum UserType {
         STUDENT,
@@ -20,27 +26,51 @@ public abstract class User {
     protected UserType userType;
     protected byte[] salt;
 
+    
+    /** 
+     * @return int
+     */
     // Getters
     public int getId () {
         return id;
     }
 
+    
+    /** 
+     * @return String
+     */
     public String getFirstName () {
         return firstName;
     }
 
+    
+    /** 
+     * @return String
+     */
     public String getLastName () {
         return lastName;
     }
 
+    
+    /** 
+     * @return String
+     */
     public String getUsername () {
         return username;
     }
 
+    
+    /** 
+     * @return String
+     */
     public String getEmail () {
         return email;
     }
 
+    
+    /** 
+     * @return UserType
+     */
     public UserType getUserType () {
         return userType;
     }
@@ -50,11 +80,20 @@ public abstract class User {
         nextId = 100;
     }
 
+    
+    /** 
+     * @return int
+     */
     @Override
     public int hashCode() {
         return Objects.hash(id, firstName, lastName, username, email);
     }
 
+    
+    /** 
+     * @param obj
+     * @return boolean
+     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj)

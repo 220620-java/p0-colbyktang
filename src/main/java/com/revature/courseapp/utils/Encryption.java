@@ -6,7 +6,11 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 public class Encryption {
-
+    /** Generate an encrypted password with a SHA-512 salt.
+     * @param password The password to be converted into SHA-512.
+     * @param salt The salt for encrypting.
+     * @return String
+     */
     public static String generateEncryptedPassword (String password, byte[] salt) {
         String encryptedPassword = "";
         try {
@@ -32,13 +36,23 @@ public class Encryption {
         return encryptedPassword;
     }
 
-    public static byte[] generateSalt() throws NoSuchAlgorithmException {
-        // Create Random Number Generator with SHA1PRNG algorithm
-        SecureRandom randomNumber = SecureRandom.getInstance("SHA1PRNG");
-
-        // Create the byte array to store the number
+    
+    /** Generates a SHA salt to be used with encrypting passwords.
+     * @return byte[]
+     * @throws NoSuchAlgorithmException
+     */
+    public static byte[] generateSalt() {
         byte[] salt = new byte[16];
-        randomNumber.nextBytes(salt);
+        try {
+            // Create Random Number Generator with SHA1PRNG algorithm
+            SecureRandom randomNumber = SecureRandom.getInstance("SHA1PRNG");
+
+            // Create the byte array to store the number
+            randomNumber.nextBytes(salt);
+        }
+        catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
         return salt;
     }
 }

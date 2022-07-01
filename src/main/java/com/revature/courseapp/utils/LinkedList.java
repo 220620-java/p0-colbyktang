@@ -16,15 +16,27 @@ public class LinkedList <T> implements List<T> {
         }
     }
 
+    
+    /** The size of the list
+     * @return int
+     */
     public int size() {
         return size;
     }
 
+    
+    /** Is the list empty?
+     * @return boolean
+     */
     public boolean isEmpty() {
         return size <= 0;
     }
 
-    // Retrieve a value at the index
+    
+    /** Retrieve a value at the index
+     * @param index
+     * @return T
+     */
     public T get (int index) {
         if (isEmpty()) {
             return null;
@@ -42,7 +54,11 @@ public class LinkedList <T> implements List<T> {
         return returnNode.value;
     }
 
-    // Retrieve a value at the index, returns -1 if it cannot be found
+    
+    /** Retrieve a value at the index, returns -1 if it cannot be found
+     * @param value
+     * @return int
+     */
     public int getIndex (T value) {
         if (isEmpty()) {
             return -1;
@@ -59,7 +75,11 @@ public class LinkedList <T> implements List<T> {
         return -1;
     }
 
-    // Change a value at an index
+    
+    /** Change a value at an index
+     * @param index
+     * @param value
+     */
     public void set (int index, T value) {
         Node<T> returnNode = head;
         for (int i = 0; i < index; i++) {
@@ -71,7 +91,10 @@ public class LinkedList <T> implements List<T> {
         returnNode.value = value;
     }
 
-    // Add new node at the end
+    
+    /** Add new node at the end
+     * @param value
+     */
     public void add (T value) {
         if (head == null) {
             head = new Node<T>(value);
@@ -94,7 +117,10 @@ public class LinkedList <T> implements List<T> {
         }
     }
 
-    // Adds the other list at the end
+    
+    /** Adds the other list at the end
+     * @param arr
+     */
     public void addAll (List<T> arr) {
         try {
             LinkedList<T> linkedList = (LinkedList<T>) arr;
@@ -113,7 +139,10 @@ public class LinkedList <T> implements List<T> {
         */
     }
 
-    // Remove the tail
+    
+    /** Remove the tail
+     * @return T
+     */
     public T remove () {
         if (tail == null) {
             return null;
@@ -132,7 +161,11 @@ public class LinkedList <T> implements List<T> {
         return value;
     }
 
-    // Find and remove a specific value
+    
+    /** Find and remove a specific value
+     * @param value
+     * @return T
+     */
     public T remove (T value) {
         Node<T> returnNode = head;
         for (int i = 0; i < size(); i++) {
@@ -155,6 +188,11 @@ public class LinkedList <T> implements List<T> {
         return returnNode.value;
     }
 
+    
+    /** Remove a specific value at a specific index
+     * @param index
+     * @return T
+     */
     public T removeAtIndex (int index) {
         if (index < 0) {
             return null;
@@ -201,6 +239,10 @@ public class LinkedList <T> implements List<T> {
         return returnNode.value;
     }
 
+    
+    /** 
+     * @return String
+     */
     @Override
     public String toString () {
         String retString = "{";

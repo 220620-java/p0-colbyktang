@@ -1,5 +1,17 @@
 package com.revature.courseapp;
+import java.io.Console;
+import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
+
+import com.revature.courseapp.utils.Encryption;
+import com.revature.courseapp.utils.List;
+import com.revature.courseapp.data.CoursePostgres;
+import com.revature.courseapp.data.UserPostgres;
+import com.revature.courseapp.data.ConnectionUtil;
+import com.revature.courseapp.models.Course;
+import com.revature.courseapp.models.FacultyMember;
+import com.revature.courseapp.models.Student;
+import com.revature.courseapp.models.User;
 
 /*
  * Minimum features
@@ -32,43 +44,50 @@ import java.util.Scanner;
     - view the classes that I have registered for
  */
 
-import com.revature.courseapp.Register;
-import com.revature.courseapp.utils.DatabaseCourses;
-import com.revature.courseapp.utils.DatabaseUsers;
-import com.revature.courseapp.utils.PostgreSQL;
-import com.revature.courseapp.user.User;
-
+/** CourseApp Console Application is an application that lets students view, enroll, and withdraw from courses
+ *  as well as letting faculty manage courses. This application encrypts passwords in SHA-512 and uses JWT to
+ *  temporarily keep your login session.
+ * @author Colby Tang
+ * @version 1.0
+ */
 public class App {
-    private static DatabaseUsers userDB;
-    private static DatabaseCourses courseDB;
+    private static ConnectionUtil db;
     private static boolean isLoggedIn = false;
     private static User loggedUser = null;
     private static Scanner scanner;
 
-    public static DatabaseUsers getUserDB () {
-        return userDB;
+    /** 
+     * @return PostgreSQL
+     */
+    public static ConnectionUtil getDB () {
+        return db;
     }
-
-    public static DatabaseCourses getCourseDB () {
-        return courseDB;
-    }
-
+    
+    /** 
+     * @return boolean
+     */
     public static boolean getIsLoggedIn () {
         return isLoggedIn;
     }
 
+    
+    /** 
+     * @return Scanner
+     */
     public static Scanner getScanner() {
         return scanner;
     }
 
+    
+    /** Set the logged in user after logging in.
+     * @param user
+     */
     public static void setLoggedUser (User user) {
         loggedUser = user;
     }
 
     public static void main (String[] args) {
-        PostgreSQL db = new PostgreSQL();
-        userDB = (DatabaseUsers) db;
-        courseDB = (DatabaseCourses) db;
+        db = ConnectionUtil.getConnectionUtil("aws_db.json");
         scanner = new Scanner(System.in);
         System.out.println(
             "Welcome to Course Registration by Colby Tang!"
@@ -80,12 +99,12 @@ public class App {
                 switch (input) {
                     // Login
                     case 1:
-                    isLoggedIn = Login.userLogin();
+                    isLoggedIn = userLogin();
                     break;
     
                     // Register
                     case 2:
-                    Register.RegisterStudent();
+                    RegisterStudent();
                     break;
     
                     // Exit
@@ -107,9 +126,13 @@ public class App {
         }
         System.out.println("EXITING APPLICATION!");
         scanner.close();
-        db.closeConnection();
+        getDB().closeConnection();
     }
 
+    
+    /** 
+     * @return int
+     */
     public static int LoginMenu () {
         System.out.println("Login Menu");
         System.out.println("1. Login User");
@@ -130,10 +153,102 @@ public class App {
                 return 2;
             case 3:
                 return 3;
+            case 4:
+                FacultyMember user = new FacultyMember(201, "Colby", "Tang", "ctang2", "ctang2@email.com");
+                byte[] salt = Encryption.generateSalt();
+                String pass = Encryption.generateEncryptedPassword("pass", salt);
+                UserPostgres.insertUser(db.getCurrentConnection(), user, pass, salt);
         }
-        return 3;
+        return -1;
     }
 
+    /**
+     * @return boolean
+     */
+    public static boolean userLogin () {
+        Scanner scanner = App.getScanner();
+        String username = "";
+        do {
+            System.out.print ("Enter your username: ");
+            username = scanner.nextLine();
+        } while (username == "");
+
+        Console console = System.console();
+
+        String password;
+        do {
+            password = new String (console.readPassword("Enter your password: "));
+        } while (password == "");
+
+        // Check user from the database
+        boolean isPasswordValid = UserPostgres.validatePassword(db.getCurrentConnection(), username, password);
+        if (isPasswordValid) {
+            App.setLoggedUser(UserPostgres.getUserFromDB(db.getCurrentConnection(), username));
+        }
+        else {
+            System.out.println("Password is not correct!");
+        }
+        return isPasswordValid;
+    }
+
+    public static void RegisterStudent () {
+        Scanner scanner = App.getScanner();
+        System.out.println(
+            "Registering as a new student..."
+        );
+
+        String firstName = "";
+        do {
+            
+            System.out.print ("Enter your first name: ");
+            firstName = scanner.nextLine();
+        } while (firstName == "");
+
+        String lastName = "";
+        do {
+            System.out.print ("Enter your last name: ");
+            lastName = scanner.nextLine();
+        } while (lastName == "");
+        
+        String username = "";
+        do {
+            System.out.print ("Enter your username: ");
+            username = scanner.nextLine();
+        } while (username == "");
+
+        String email = "";
+        do {
+            System.out.print ("Enter your email: ");
+            email = scanner.nextLine();
+        } while (email == "");
+
+        Console console = System.console();
+
+        String password;
+        String verifyPassword;
+        do {
+            password = new String (console.readPassword("Enter your password: "));
+            verifyPassword = new String (console.readPassword("Enter your password again: "));
+
+            if (!password.equals(verifyPassword)) {
+                System.out.println("Passwords do not match");
+            }
+        } while (!password.equals(verifyPassword) && password != "");
+
+        System.out.println("Passwords match!");
+        Student student = new Student(firstName, lastName, username, email);
+        System.out.println(student);
+
+        // Add student to the database
+        byte[] salt = Encryption.generateSalt();
+        String pass = Encryption.generateEncryptedPassword(password, salt);
+        UserPostgres.insertUser(db.getCurrentConnection(), student, pass, salt);
+        System.out.println(String.format ("Created student %s %s. ID: %d", firstName, lastName, student.getId()));
+    }
+    
+    /** 
+     * @return int
+     */
     public static int StudentMenu () {
         System.out.println("Student Menu");
         System.out.println("1. View Available Classes");
@@ -147,15 +262,44 @@ public class App {
         scanner.nextLine();
         switch (input) {
             case 1:
+            userViewClasses();
                 return 1;
             case 2:
                 return 2;
             case 3:
                 return -1;
+            case 5:
+                isLoggedIn = false;
+                return -1;
         }
-        return 3;
+        return -1;
     }
 
+    public static void userViewClasses () {
+        System.out.println("Viewing Available Classes...");
+        List<Course> courses = CoursePostgres.getAllAvailableCourses(db.getCurrentConnection());
+        if (courses.size() == 0) {
+            System.out.println("NO AVAILABLE CLASSES!");
+            return;
+        }
+        for (int i = 0; i < courses.size(); i++) {
+            Course course = courses.get(i);
+            String printString = String.format(
+                "%d: %s [%d/%d]", 
+                course.getId(), 
+                course.getCourseName(), 
+                course.getNumberOfStudents(), 
+                course.getCapacity()
+                );
+            System.out.println(printString);
+        }
+        return;
+    }
+
+    
+    /** 
+     * @return int
+     */
     public static int FacultyMenu () {
         System.out.println("Faculty Menu");
         System.out.println("1. Add New Classes");
@@ -164,19 +308,22 @@ public class App {
         System.out.println("4. Logout");
 
         int input = 0;
-        Scanner scanner = new Scanner(System.in);
         input = scanner.nextInt();
         switch (input) {
             case 1:
-                scanner.close();
                 return 1;
             case 2:
-                scanner.close();
                 return 2;
             case 3:
-                scanner.close();
+                return -1;
+            case 4:
+                isLoggedIn = false;
                 return -1;
         }
-        return 3;
+        return -1;
     }
+
+
+
+
 }

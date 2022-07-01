@@ -1,4 +1,4 @@
-package com.revature.courseapp.utils;
+package com.revature.courseapp.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -7,15 +7,20 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import com.revature.courseapp.course.Course;
+import com.revature.courseapp.models.Course;
+import com.revature.courseapp.utils.List;
 
 public class DatabaseCoursesTest {
 
-    static DatabaseCourses db;
+    static ConnectionUtil db;
 
     @BeforeAll
     public static void OpenDatabase () {
-        db = new DatabaseCourses();
+        // Try to use AWS DB
+        db = ConnectionUtil.getConnectionUtil("aws_db.json");
+
+        // If AWS does not work use local database
+        if (db.getCurrentConnection() == null) db = ConnectionUtil.getConnectionUtil();
     }
 
     @AfterAll
@@ -26,7 +31,7 @@ public class DatabaseCoursesTest {
     @Test
     void testGetCourse() {
         Course course = new Course (101, "Introduction to Computer Science", "FALL 2022", 30);
-        assertEquals(course, db.getCourse(101));
+        assertEquals(course, CoursePostgres.getCourse(db.getCurrentConnection(), 101));
     }
 
     @Test
@@ -39,9 +44,9 @@ public class DatabaseCoursesTest {
         Course course = new Course (101, "Introduction to Computer Science", "FALL 2022", 30);
         Course course2 = new Course (301, "Introduction to Electricity", "FALL 2022", 30);
         Course course3 = new Course (201, "Introduction to Technology", "FALL 2022", 30);
-        assertTrue(db.doesCourseExist(course));
-        assertTrue(db.doesCourseExist(course2));
-        assertTrue(db.doesCourseExist(course3));
+        assertTrue(CoursePostgres.doesCourseExist(db.getCurrentConnection(), course.getId()));
+        assertTrue(CoursePostgres.doesCourseExist(db.getCurrentConnection(), course2.getId()));
+        assertTrue(CoursePostgres.doesCourseExist(db.getCurrentConnection(), course3.getId()));
     }
 
     @Test
@@ -51,15 +56,15 @@ public class DatabaseCoursesTest {
 
     @Test
     void testGetAllEnrolledCourses() {
-        List<Course> courses101 = db.getAllEnrolledCourses(101);
+        List<Course> courses101 = CoursePostgres.getAllEnrolledCourses(db.getCurrentConnection(), 101);
         assertEquals (101, courses101.get(0).getId());
         assertEquals ("Introduction to Computer Science", courses101.get(0).getCourseName());
 
-        List<Course> courses102 = db.getAllEnrolledCourses(102);
+        List<Course> courses102 = CoursePostgres.getAllEnrolledCourses(db.getCurrentConnection(), 102);
         assertEquals (101, courses102.get(0).getId());
         assertEquals ("Introduction to Computer Science", courses102.get(0).getCourseName());
 
-        List<Course> courses201 = db.getAllEnrolledCourses(201);
+        List<Course> courses201 = CoursePostgres.getAllEnrolledCourses(db.getCurrentConnection(), 201);
         assertEquals (null, courses201.get(0));
 
     }
