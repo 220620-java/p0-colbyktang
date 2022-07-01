@@ -1,6 +1,5 @@
 package com.revature.courseapp.data;
 
-import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
