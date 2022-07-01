@@ -29,44 +29,7 @@ public class ConnectionUtil {
     }
 
     private ConnectionUtil (String jsonFilename) {
-        props = new Properties();
-        try {
-            String[] credentials = readDatabaseCredentials(jsonFilename);
-            if (credentials == null) { System.out.println("Could not read " + jsonFilename);}
-            String endpoint = credentials[0];
-            String user = credentials[1];
-            String password = credentials[2];
-            String ssl = credentials[3];
-
-            props.setProperty("user", user);
-            props.setProperty("password", password);
-            props.setProperty("ssl", ssl);
-
-            String url = String.format ("jdbc:postgresql://%s:5432/", endpoint);
-            conn = DriverManager.getConnection(url, props);
-            System.out.println("Using remote database!");
-        }
-        catch (SQLException e) {
-            try {
-                System.out.println("Could not connect to remote database, using local database!");
-                String[] credentials = readDatabaseCredentials("local_db.json");
-                String endpoint = credentials[0];
-                String user = credentials[1];
-                String password = credentials[2];
-                String ssl = credentials[3];
-    
-                props.setProperty("user", user);
-                props.setProperty("password", password);
-                props.setProperty("ssl", ssl);
-
-                String url = String.format ("jdbc:postgresql://%s:5432/", endpoint);
-                conn = DriverManager.getConnection(url, props);
-                System.out.println("Using local database!");
-            }
-            catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-        }
+        conn = openConnection (jsonFilename);
     }
 
     /**
@@ -97,7 +60,52 @@ public class ConnectionUtil {
      */
     // Get the connection that's opened
     public Connection getCurrentConnection () {
+        if (conn == null) {
+            conn = openConnection ("remote_db.json");
+        }
         return conn;
+    }
+
+    public Connection openConnection (String jsonFilename) {
+        props = new Properties();
+        try {
+            String[] credentials = readDatabaseCredentials(jsonFilename);
+            if (credentials == null) { System.out.println("Could not read " + jsonFilename);}
+            String endpoint = credentials[0];
+            String user = credentials[1];
+            String password = credentials[2];
+            String ssl = credentials[3];
+
+            props.setProperty("user", user);
+            props.setProperty("password", password);
+            props.setProperty("ssl", ssl);
+
+            String url = String.format ("jdbc:postgresql://%s:5432/", endpoint);
+            System.out.println("Using remote database!");
+            return DriverManager.getConnection(url, props);
+        }
+        catch (SQLException e) {
+            try {
+                System.out.println("Could not connect to remote database, using local database!");
+                String[] credentials = readDatabaseCredentials("local_db.json");
+                String endpoint = credentials[0];
+                String user = credentials[1];
+                String password = credentials[2];
+                String ssl = credentials[3];
+    
+                props.setProperty("user", user);
+                props.setProperty("password", password);
+                props.setProperty("ssl", ssl);
+
+                String url = String.format ("jdbc:postgresql://%s:5432/", endpoint);
+                System.out.println("Using local database!");
+                return DriverManager.getConnection(url, props);
+            }
+            catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+        return null;
     }
 
     /**

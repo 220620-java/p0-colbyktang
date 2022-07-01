@@ -4,6 +4,11 @@ import com.revature.courseapp.models.Course;
 import com.revature.courseapp.utils.List;
 
 public interface CourseDAO extends DataAccessObject<Course>{
+    /** Removes a course from the catalog. It should also delete any students enrolled into the class.
+     * @param course_id
+     * @return boolean
+     */
+    public void delete(int course_id);
 
     /** Checks if course already exists in the table.
      * @param course

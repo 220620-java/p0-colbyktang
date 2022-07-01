@@ -122,7 +122,6 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
 
     /** Removes a course from the catalog. It should also delete any students enrolled into the class.
      * @param course
-     * @return boolean
      */
     @Override
     public void delete(Course course) {
@@ -135,6 +134,35 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setInt(1, course.getId());
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            closeQuietly(preparedStatement);
+        }
+    }
+
+    /** Removes a course from the catalog. It should also delete any students enrolled into the class.
+     * @param course
+     */
+    @Override
+    public void delete(int course_id) {
+        if (!doesCourseExist(course_id)) {
+            return;
+        }
+
+        String query = "DELETE FROM courses WHERE course_id=?";
+        PreparedStatement preparedStatement = null;
+        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
+            preparedStatement = conn.prepareStatement(query);
+            preparedStatement.setInt(1, course_id);
             preparedStatement.executeUpdate();
             preparedStatement.close();
         }
@@ -220,7 +248,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
      */
     public List<Course> getAllEnrolledCourses (int student_id) {
         List<Course> enrolledCourses = new LinkedList<>();
-        String query = "SELECT course_id FROM coursesusers WHERE user_id=?";
+        String query = "SELECT course_id FROM courses_users WHERE user_id=?";
 
         PreparedStatement preparedStatement = null;
         ResultSet result = null;
@@ -318,7 +346,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
      * @return boolean
      */
     public boolean withdrawFromCourse (int course_id, int student_id) {
-        String query = "DELETE FROM coursesusers WHERE course_id=? AND user_id=?";
+        String query = "DELETE FROM courses_users WHERE course_id=? AND user_id=?";
         PreparedStatement preparedStatement = null;
         try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
             preparedStatement = conn.prepareStatement(query);

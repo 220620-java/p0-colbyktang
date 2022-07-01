@@ -3,11 +3,15 @@ import java.io.Console;
 import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
+import org.w3c.dom.UserDataHandler;
+
 import com.revature.courseapp.utils.Encryption;
 import com.revature.courseapp.utils.List;
 import com.revature.courseapp.data.CoursePostgres;
+import com.revature.courseapp.data.UserDAO;
 import com.revature.courseapp.data.UserPostgres;
 import com.revature.courseapp.data.ConnectionUtil;
+import com.revature.courseapp.data.CourseDAO;
 import com.revature.courseapp.models.Course;
 import com.revature.courseapp.models.FacultyMember;
 import com.revature.courseapp.models.Student;
@@ -52,6 +56,8 @@ import com.revature.courseapp.models.User;
  */
 public class App {
     private static ConnectionUtil db;
+    private static UserDAO userDAO;
+    private static CourseDAO courseDAO;
     private static boolean isLoggedIn = false;
     private static User loggedUser = null;
     private static Scanner scanner;
@@ -87,7 +93,8 @@ public class App {
     }
 
     public static void main (String[] args) {
-        db = ConnectionUtil.getConnectionUtil("aws_db.json");
+        userDAO = new UserPostgres();
+        courseDAO = new CoursePostgres();
         scanner = new Scanner(System.in);
         System.out.println(
             "Welcome to Course Registration by Colby Tang!"
@@ -157,7 +164,7 @@ public class App {
                 FacultyMember user = new FacultyMember(201, "Colby", "Tang", "ctang2", "ctang2@email.com");
                 byte[] salt = Encryption.generateSalt();
                 String pass = Encryption.generateEncryptedPassword("pass", salt);
-                UserPostgres.insertUser(db.getCurrentConnection(), user, pass, salt);
+                userDAO.create(user, pass, salt);
         }
         return -1;
     }
@@ -181,9 +188,9 @@ public class App {
         } while (password == "");
 
         // Check user from the database
-        boolean isPasswordValid = UserPostgres.validatePassword(db.getCurrentConnection(), username, password);
+        boolean isPasswordValid = userDAO.validatePassword(username, password);
         if (isPasswordValid) {
-            App.setLoggedUser(UserPostgres.getUserFromDB(db.getCurrentConnection(), username));
+            App.setLoggedUser(userDAO.findByUsername(username));
         }
         else {
             System.out.println("Password is not correct!");
@@ -242,7 +249,7 @@ public class App {
         // Add student to the database
         byte[] salt = Encryption.generateSalt();
         String pass = Encryption.generateEncryptedPassword(password, salt);
-        UserPostgres.insertUser(db.getCurrentConnection(), student, pass, salt);
+        userDAO.create(student, pass, salt);
         System.out.println(String.format ("Created student %s %s. ID: %d", firstName, lastName, student.getId()));
     }
     
@@ -262,12 +269,17 @@ public class App {
         scanner.nextLine();
         switch (input) {
             case 1:
-            userViewClasses();
+                studentViewAvailableClasses();
                 return 1;
             case 2:
+                studentEnrollClass ();
                 return 2;
             case 3:
-                return -1;
+                studentViewRegisteredClasses();
+                return 3;
+            case 4:
+                studentCancelClass();
+                return 4;
             case 5:
                 isLoggedIn = false;
                 return -1;
@@ -275,9 +287,9 @@ public class App {
         return -1;
     }
 
-    public static void userViewClasses () {
+    public static void studentViewAvailableClasses () {
         System.out.println("Viewing Available Classes...");
-        List<Course> courses = CoursePostgres.getAllAvailableCourses(db.getCurrentConnection());
+        List<Course> courses = courseDAO.findAll();
         if (courses.size() == 0) {
             System.out.println("NO AVAILABLE CLASSES!");
             return;
@@ -296,6 +308,56 @@ public class App {
         return;
     }
 
+    public static void studentEnrollClass () {
+        System.out.print("Choose a class to enroll (Course ID): ");
+        Scanner scanner = App.getScanner();
+        String input = scanner.nextLine();
+        scanner.close();
+        try {
+            System.out.println("Enrolling in + Course " + input + ".");
+            courseDAO.enrollCourse(Integer.parseInt(input), loggedUser.getId());
+        }
+        catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void studentViewRegisteredClasses () {
+        System.out.println("Viewing Registered Classes...");
+        List<Course> courses = courseDAO.getAllEnrolledCourses(loggedUser.getId());
+        if (courses.size() == 0) {
+            System.out.println("NO REGISTERED CLASSES!");
+            return;
+        }
+        for (int i = 0; i < courses.size(); i++) {
+            Course course = courses.get(i);
+            String printString = String.format(
+                "%d: %s [%d/%d]", 
+                course.getId(), 
+                course.getCourseName(), 
+                course.getNumberOfStudents(), 
+                course.getCapacity()
+                );
+            System.out.println(printString);
+        }
+        return;
+    }
+
+    public static void studentCancelClass () {
+        System.out.print("Choose a class to CANCEL (Course ID): ");
+        Scanner scanner = App.getScanner();
+        String input = scanner.nextLine();
+        scanner.close();
+        try {
+            System.out.println("Cancelling enrollment in + Course " + input + ".");
+            boolean isWithdrawn = courseDAO.withdrawFromCourse(Integer.parseInt(input), loggedUser.getId());
+            if (isWithdrawn) System.out.println("Withdrawn from Course " + input + ".");
+            else System.out.println("Could not withdraw from Course " + input + ".");
+        }
+        catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+    }
     
     /** 
      * @return int
@@ -311,11 +373,14 @@ public class App {
         input = scanner.nextInt();
         switch (input) {
             case 1:
+                facultyAddNewClass();
                 return 1;
             case 2:
+                facultyChangeClassDetails ();
                 return 2;
             case 3:
-                return -1;
+            facultyRemoveClass ();
+                return 3;
             case 4:
                 isLoggedIn = false;
                 return -1;
@@ -323,7 +388,59 @@ public class App {
         return -1;
     }
 
+    public static void facultyAddNewClass () {
+        Scanner scanner = App.getScanner();
+        System.out.println("Adding new class...");
+        System.out.print("Enter a course id: ");
+        String input = scanner.nextLine();
+        int course_id = Integer.parseInt(input);
 
+        System.out.print("Enter a course name: ");
+        input = scanner.nextLine();
+        String course_name = input;
 
+        System.out.print("Enter a semester  followed by year (FALL, SPRING, SUMMER 2022): ");
+        input = scanner.nextLine();
+        String semester = input;
 
+        System.out.print("Enter a capacity: ");
+        input = scanner.nextLine();
+        int capacity = Integer.parseInt(input);
+
+        Course course = new Course (course_id, course_name, semester, capacity);
+        System.out.println("Adding new course " + course_id + "...");
+        courseDAO.create(course);
+        scanner.close();
+    }
+
+    public static void facultyChangeClassDetails () {
+        Scanner scanner = App.getScanner();
+        System.out.print("Select a class to change (course id): ");
+        String input = scanner.nextLine();
+        int course_id = Integer.parseInt(input);
+
+        System.out.print("Enter a course name: ");
+        input = scanner.nextLine();
+        String course_name = input;
+
+        System.out.print("Enter a semester  followed by year (FALL, SPRING, SUMMER 2022): ");
+        input = scanner.nextLine();
+        String semester = input;
+
+        System.out.print("Enter a capacity: ");
+        input = scanner.nextLine();
+        int capacity = Integer.parseInt(input);
+        courseDAO.update(courseDAO.findById(course_id));
+        scanner.close();
+    }
+
+    public static void facultyRemoveClass () {
+        Scanner scanner = App.getScanner();
+        System.out.print("Which class is being removed? (course id): ");
+        String input = scanner.nextLine();
+        int course_id = Integer.parseInt(input);
+        courseDAO.delete(course_id);
+
+        scanner.close();
+    }
 }
