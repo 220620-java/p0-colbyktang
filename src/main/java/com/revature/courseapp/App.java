@@ -430,7 +430,11 @@ public class App {
         System.out.print("Enter a capacity: ");
         input = scanner.nextLine();
         int capacity = Integer.parseInt(input);
-        courseDAO.update(courseDAO.findById(course_id));
+        Course course = courseDAO.findById(course_id);
+        course.setCourseName(course_name);
+        course.setSemester(semester);
+        course.setCapacity(capacity);
+        courseDAO.update(course);
         scanner.close();
     }
 
