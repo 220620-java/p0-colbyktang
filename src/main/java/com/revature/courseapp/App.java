@@ -3,6 +3,16 @@ import java.io.Console;
 import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
+import com.revature.courseapp.utils.Encryption;
+import com.revature.courseapp.utils.List;
+import com.revature.courseapp.data.CoursePostgres;
+import com.revature.courseapp.data.UserPostgres;
+import com.revature.courseapp.data.ConnectionUtil;
+import com.revature.courseapp.models.Course;
+import com.revature.courseapp.models.FacultyMember;
+import com.revature.courseapp.models.Student;
+import com.revature.courseapp.models.User;
+
 /*
  * Minimum features
  * Use of custom data structures (do not use java.util Collection types!)
@@ -34,18 +44,14 @@ import java.util.Scanner;
     - view the classes that I have registered for
  */
 
-import com.revature.courseapp.utils.DatabaseCourses;
-import com.revature.courseapp.utils.DatabaseUsers;
-import com.revature.courseapp.utils.Encryption;
-import com.revature.courseapp.utils.List;
-import com.revature.courseapp.utils.PostgreSQL;
-import com.revature.courseapp.course.Course;
-import com.revature.courseapp.user.FacultyMember;
-import com.revature.courseapp.user.Student;
-import com.revature.courseapp.user.User;
-
+/** CourseApp Console Application is an application that lets students view, enroll, and withdraw from courses
+ *  as well as letting faculty manage courses. This application encrypts passwords in SHA-512 and uses JWT to
+ *  temporarily keep your login session.
+ * @author Colby Tang
+ * @version 1.0
+ */
 public class App {
-    private static PostgreSQL db;
+    private static ConnectionUtil db;
     private static boolean isLoggedIn = false;
     private static User loggedUser = null;
     private static Scanner scanner;
@@ -53,7 +59,7 @@ public class App {
     /** 
      * @return PostgreSQL
      */
-    public static PostgreSQL getDB () {
+    public static ConnectionUtil getDB () {
         return db;
     }
     
@@ -73,14 +79,15 @@ public class App {
     }
 
     
-    /** 
+    /** Set the logged in user after logging in.
      * @param user
      */
     public static void setLoggedUser (User user) {
         loggedUser = user;
     }
+
     public static void main (String[] args) {
-        db = new PostgreSQL("aws_db.json");
+        db = ConnectionUtil.getConnectionUtil("aws_db.json");
         scanner = new Scanner(System.in);
         System.out.println(
             "Welcome to Course Registration by Colby Tang!"
@@ -150,11 +157,14 @@ public class App {
                 FacultyMember user = new FacultyMember(201, "Colby", "Tang", "ctang2", "ctang2@email.com");
                 byte[] salt = Encryption.generateSalt();
                 String pass = Encryption.generateEncryptedPassword("pass", salt);
-                DatabaseUsers.insertUser(db.getConnection(), user, pass, salt);
+                UserPostgres.insertUser(db.getCurrentConnection(), user, pass, salt);
         }
         return -1;
     }
 
+    /**
+     * @return boolean
+     */
     public static boolean userLogin () {
         Scanner scanner = App.getScanner();
         String username = "";
@@ -171,9 +181,9 @@ public class App {
         } while (password == "");
 
         // Check user from the database
-        boolean isPasswordValid = DatabaseUsers.validatePassword(db.getConnection(), username, password);
+        boolean isPasswordValid = UserPostgres.validatePassword(db.getCurrentConnection(), username, password);
         if (isPasswordValid) {
-            App.setLoggedUser(DatabaseUsers.getUserFromDB(db.getConnection(), username));
+            App.setLoggedUser(UserPostgres.getUserFromDB(db.getCurrentConnection(), username));
         }
         else {
             System.out.println("Password is not correct!");
@@ -232,7 +242,7 @@ public class App {
         // Add student to the database
         byte[] salt = Encryption.generateSalt();
         String pass = Encryption.generateEncryptedPassword(password, salt);
-        DatabaseUsers.insertUser(db.getConnection(), student, pass, salt);
+        UserPostgres.insertUser(db.getCurrentConnection(), student, pass, salt);
         System.out.println(String.format ("Created student %s %s. ID: %d", firstName, lastName, student.getId()));
     }
     
@@ -267,7 +277,7 @@ public class App {
 
     public static void userViewClasses () {
         System.out.println("Viewing Available Classes...");
-        List<Course> courses = DatabaseCourses.getAllAvailableCourses(db.getConnection());
+        List<Course> courses = CoursePostgres.getAllAvailableCourses(db.getCurrentConnection());
         if (courses.size() == 0) {
             System.out.println("NO AVAILABLE CLASSES!");
             return;

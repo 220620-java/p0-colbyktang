@@ -1,6 +1,5 @@
-package com.revature.courseapp.course;
+package com.revature.courseapp.models;
 
-import com.revature.courseapp.user.Student;
 import com.revature.courseapp.utils.*;
 
 /**

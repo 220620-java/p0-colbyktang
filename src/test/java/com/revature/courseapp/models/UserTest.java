@@ -1,4 +1,4 @@
-package com.revature.courseapp.user;
+package com.revature.courseapp.models;
 
 // Junit imports
 import static org.junit.jupiter.api.Assertions.assertEquals;

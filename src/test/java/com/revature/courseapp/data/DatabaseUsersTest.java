@@ -1,4 +1,4 @@
-package com.revature.courseapp.utils;
+package com.revature.courseapp.data;
 
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
@@ -10,33 +10,37 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import com.revature.courseapp.user.*;
+import com.revature.courseapp.models.FacultyMember;
+import com.revature.courseapp.models.Student;
+import com.revature.courseapp.models.User;
+import com.revature.courseapp.utils.Encryption;
+import com.revature.courseapp.utils.List;
 
 public class DatabaseUsersTest {
 
-    static PostgreSQL db;
+    static ConnectionUtil db;
 
     @BeforeAll
     public static void OpenDatabase () {
         // Try to use AWS DB
-        db = new PostgreSQL ("aws_db.json");
+        db = ConnectionUtil.getConnectionUtil("aws_db.json");
 
         // If AWS does not work use local database
-        if (db.getConnection() == null) db = new PostgreSQL();
+        if (db.getCurrentConnection() == null) db = ConnectionUtil.getConnectionUtil();
     }
 
     @AfterAll
     public static void afterAll () {
-        if (db != null && db.getConnection() != null)
+        if (db != null && db.getCurrentConnection() != null)
             db.closeConnection();
     }
 
     @Test
     public void testGetAllUsers() {
-        List<User> allUsers = DatabaseUsers.getAllUsers(db.getConnection());
+        List<User> allUsers = UserPostgres.getAllUsers(db.getCurrentConnection());
         System.out.println(allUsers);
         try {
-            db.getConnection().close();
+            db.getCurrentConnection().close();
         }
         catch (SQLException e) {
             e.printStackTrace();
@@ -49,11 +53,11 @@ public class DatabaseUsersTest {
     @Test
     public void testDoesUserExist () {
         Student student = new Student ("Joe", "Test", "jtest", "jtest@email.com");
-        assertTrue (DatabaseUsers.doesUserExist(db.getConnection(), student.getUsername()));
+        assertTrue (UserPostgres.doesUserExist(db.getCurrentConnection(), student.getUsername()));
         Student noStudent = new Student (600, "Nobody", "Test", "ntest", "ntest@email.com");
-        assertFalse (DatabaseUsers.doesUserExist(db.getConnection(), noStudent.getUsername()));
+        assertFalse (UserPostgres.doesUserExist(db.getCurrentConnection(), noStudent.getUsername()));
         try {
-            db.getConnection().close();
+            db.getCurrentConnection().close();
         }
         catch (SQLException e) {
             e.printStackTrace();
@@ -65,23 +69,23 @@ public class DatabaseUsersTest {
 
     @Test
     public void testInsertUser() {
-        DatabaseUtils.truncateTable(db.getConnection(), "users");
+        DatabaseUtils.truncateTable(db.getCurrentConnection(), "users");
         Student student = new Student ("Joe", "Test", "jtest", "jtest@email.com");
         Student student2 = new Student ("John", "Test", "jotest", "jtest@email.com");
         Student student3 = new Student ("Jack", "Test", "jatest", "jtest@email.com");
         FacultyMember facultyMember = new FacultyMember("Fact", "Culty", "fculty", "fculty@email.com");
         byte[] salt = Encryption.generateSalt();
         String pass = Encryption.generateEncryptedPassword("pass", salt);
-        DatabaseUsers.insertUser(db.getConnection(), student, pass, salt);
+        UserPostgres.insertUser(db.getCurrentConnection(), student, pass, salt);
         salt = Encryption.generateSalt();
         pass = Encryption.generateEncryptedPassword("pass", salt);
-        DatabaseUsers.insertUser(db.getConnection(), student2, pass, salt);
+        UserPostgres.insertUser(db.getCurrentConnection(), student2, pass, salt);
         salt = Encryption.generateSalt();
         pass = Encryption.generateEncryptedPassword("pass", salt);
-        DatabaseUsers.insertUser(db.getConnection(), student3, pass, salt);
+        UserPostgres.insertUser(db.getCurrentConnection(), student3, pass, salt);
         salt = Encryption.generateSalt();
         pass = Encryption.generateEncryptedPassword("pass", salt);
-        DatabaseUsers.insertUser(db.getConnection(), facultyMember, pass, salt);
+        UserPostgres.insertUser(db.getCurrentConnection(), facultyMember, pass, salt);
     }
 
     @Test
@@ -89,10 +93,10 @@ public class DatabaseUsersTest {
         Student student = new Student (202, "Vladimir", "Password", "vpass", "vpass@email.com");
         byte[] salt = Encryption.generateSalt();
         String pass = Encryption.generateEncryptedPassword("pass", salt);
-        DatabaseUsers.insertUser(db.getConnection(), student, pass, salt);
-        assertTrue (DatabaseUsers.validatePassword(db.getConnection(), student.getUsername(), "pass"));
-        assertFalse (DatabaseUsers.validatePassword(db.getConnection(), student.getUsername(), "pas"));
-        assertFalse (DatabaseUsers.validatePassword(db.getConnection(), "notreal", "pas"));
+        UserPostgres.insertUser(db.getCurrentConnection(), student, pass, salt);
+        assertTrue (UserPostgres.validatePassword(db.getCurrentConnection(), student.getUsername(), "pass"));
+        assertFalse (UserPostgres.validatePassword(db.getCurrentConnection(), student.getUsername(), "pas"));
+        assertFalse (UserPostgres.validatePassword(db.getCurrentConnection(), "notreal", "pas"));
     }
 
     @Test

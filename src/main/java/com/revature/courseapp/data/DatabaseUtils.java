@@ -1,4 +1,4 @@
-package com.revature.courseapp.utils;
+package com.revature.courseapp.data;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public abstract class DatabaseUtils {
+
     /** Close statement with exception handling.
      * @param statement
      */
@@ -43,17 +44,17 @@ public abstract class DatabaseUtils {
         }
     }
 
-    /** 
+    /** Clears a table
      * @param tableName
      */
-    // Clears a table
-    public static void truncateTable (Connection conn, String tableName) {
-        Statement statement = null;
-        try {
-            statement = conn.createStatement();
-            String truncateSQLQuery = String.format ("Truncate table %s CASCADE", tableName);
-            statement.execute(truncateSQLQuery);
-            statement.close();
+    public void truncateTable (String tableName) {
+        PreparedStatement preparedStatement = null;
+        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
+            String truncateSQLQuery = String.format ("Truncate table ? CASCADE");
+            preparedStatement = conn.prepareStatement(truncateSQLQuery);
+            preparedStatement.setString(1, tableName);
+            preparedStatement.execute(truncateSQLQuery);
+            preparedStatement.close();
         }
         catch (SQLException e) {
             e.printStackTrace();
@@ -64,7 +65,7 @@ public abstract class DatabaseUtils {
             return;
         }
         finally {
-            closeQuietly(statement);
+            closeQuietly(preparedStatement);
         }
         System.out.println(String.format ("%s Table truncated.", tableName));
     }

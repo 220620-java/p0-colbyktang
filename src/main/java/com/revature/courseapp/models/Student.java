@@ -10,7 +10,7 @@
  * - view the classes that I have registered for
  */
 
-package com.revature.courseapp.user;
+package com.revature.courseapp.models;
 
 /**
 * A Student is a user that enroll in courses at a university.

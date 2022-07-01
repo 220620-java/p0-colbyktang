@@ -1,8 +1,12 @@
-package com.revature.courseapp.user;
+package com.revature.courseapp.models;
 
 /**
 * A Faculty Member is a user with the ability to add, change, and remove courses.
-* 
+* They can do the following: <ul>
+* <li> Add new classes to the registration catalog </li>
+* <li> Change the registration details for a class </li>
+* <li> Remove a class from the registration catalog (this should unregister all registered students) </li>
+* </ul>
 * @author Colby Tang
 * @version 1.0
 */

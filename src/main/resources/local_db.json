@@ -1,5 +1,6 @@
 {
     "endpoint": "localhost",
     "username": "postgre",
-    "password": ""
+    "password": "",
+    "ssl":      "false"
 }
