@@ -1,6 +1,7 @@
 package com.revature.courseapp.data;
 
 import com.revature.courseapp.models.Course;
+import com.revature.courseapp.models.Student;
 import com.revature.courseapp.utils.List;
 
 public interface CourseDAO extends DataAccessObject<Course>{
@@ -20,6 +21,12 @@ public interface CourseDAO extends DataAccessObject<Course>{
      * @return List<Course>
      */
     public List<Course> getAllEnrolledCourses (int student_id);
+
+    /** Get a list of all enrolled students of a particular course.
+     * @param course_id 
+     * @return List<Student>
+     */
+    public List<Student> getAllEnrolledStudents (int course_id);
     
     /** Have a student enroll in a course by adding it to the courses_users table.
      * @param course
@@ -33,6 +40,4 @@ public interface CourseDAO extends DataAccessObject<Course>{
      * @return boolean
      */
     public boolean withdrawFromCourse (int course_id, int student_id);
-
-
 }

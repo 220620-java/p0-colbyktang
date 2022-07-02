@@ -3,9 +3,9 @@ package com.revature.courseapp.data;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 
 import com.revature.courseapp.models.Course;
 import com.revature.courseapp.utils.List;
@@ -15,15 +15,11 @@ public class DatabaseCoursesTest {
     static CourseDAO courseDAO;
     static ConnectionUtil db;
 
+
     @BeforeAll
     public static void OpenDatabase () {
-        // Try to use AWS DB
-        db = ConnectionUtil.getConnectionUtil();
-    }
-
-    @AfterAll
-    public static void afterAll () {
-        db.closeConnection();
+        db = ConnectionUtil.getConnectionUtil("local_db.json");
+        courseDAO = new CoursePostgres();
     }
 
     @Test

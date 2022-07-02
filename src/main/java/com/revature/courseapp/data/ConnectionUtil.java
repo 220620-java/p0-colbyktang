@@ -10,26 +10,24 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 /**
- * A class that establishes a connection with either a default local database or a remote database.
- * When accessing a remote database, a JSON object in the src/resources is read for the endpoint,
+ * A class that establishes a connection with a remote database.
+ * When accessing a database, a JSON object in the src/resources is read for the endpoint,
  * username, and password to log into the database.
  * @author Colby Tang
  * @version 1.0
  */
 public class ConnectionUtil {
-    protected String url;
-    protected Connection conn;
     protected Properties props;
 
     // Singleton design pattern
     private static ConnectionUtil connUtil;
 
-    private ConnectionUtil () {
-        this ("remote_db.json");
+    protected ConnectionUtil () {
+        this ("db.json");
     }
 
     private ConnectionUtil (String jsonFilename) {
-        conn = openConnection (jsonFilename);
+        openConnection (jsonFilename);
     }
 
     /**
@@ -55,17 +53,20 @@ public class ConnectionUtil {
         return connUtil;
     }
 
-    /** 
-     * @return Connection
+    /**
+     * Creates a new connection to the database.
+     * @param jsonFilename
+     * @return
      */
-    // Get the connection that's opened
-    public Connection getCurrentConnection () {
-        if (conn == null) {
-            conn = openConnection ("remote_db.json");
-        }
-        return conn;
+    public Connection openConnection () {
+        return openConnection("db.json");
     }
 
+    /**
+     * Creates a new connection to the database.
+     * @param jsonFilename
+     * @return
+     */
     public Connection openConnection (String jsonFilename) {
         props = new Properties();
         try {
@@ -81,7 +82,7 @@ public class ConnectionUtil {
             props.setProperty("ssl", ssl);
 
             String url = String.format ("jdbc:postgresql://%s:5432/", endpoint);
-            System.out.println("Using remote database!");
+            System.out.println("Establishing connection to remote database...");
             return DriverManager.getConnection(url, props);
         }
         catch (SQLException e) {
@@ -98,7 +99,7 @@ public class ConnectionUtil {
                 props.setProperty("ssl", ssl);
 
                 String url = String.format ("jdbc:postgresql://%s:5432/", endpoint);
-                System.out.println("Using local database!");
+                System.out.println("Establishing connection to local database...");
                 return DriverManager.getConnection(url, props);
             }
             catch (SQLException ex) {
@@ -106,36 +107,6 @@ public class ConnectionUtil {
             }
         }
         return null;
-    }
-
-    /**
-     * Close the connection if it's open.
-     * @param conn
-     */
-    public static void closeConnection (Connection conn) {
-        try {
-            if (conn != null)
-                conn.close();
-        }
-        catch (SQLException e) {
-            e.getStackTrace();
-        }
-    }
-
-    /**
-     * Close the connection if it's open using the default method.
-     * 
-     */
-    public void closeConnection () {
-        closeConnection (conn);
-    }
-
-    /**
-     * Retrieves the jdbc url used to connect to the database.
-     * @return String - the url
-     */
-    public String getUrl () {
-        return url;
     }
 
     /** Reads a json file in /src/main/resources for the database credentials.
