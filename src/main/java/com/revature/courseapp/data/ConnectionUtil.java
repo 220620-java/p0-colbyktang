@@ -10,26 +10,24 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 /**
- * A class that establishes a connection with either a default local database or a remote database.
- * When accessing a remote database, a JSON object in the src/resources is read for the endpoint,
+ * A class that establishes a connection with a remote database.
+ * When accessing a database, a JSON object in the src/resources is read for the endpoint,
  * username, and password to log into the database.
  * @author Colby Tang
  * @version 1.0
  */
 public class ConnectionUtil {
-    protected String url;
-    protected Connection conn;
     protected Properties props;
 
     // Singleton design pattern
     private static ConnectionUtil connUtil;
 
-    private ConnectionUtil () {
-        this ("remote_db.json");
+    protected ConnectionUtil () {
+        this ("db.json");
     }
 
     private ConnectionUtil (String jsonFilename) {
-        conn = openConnection (jsonFilename);
+        openConnection (jsonFilename);
     }
 
     /**
@@ -55,13 +53,13 @@ public class ConnectionUtil {
         return connUtil;
     }
 
-    /** 
-     * @return Connection
+    /**
+     * Creates a new connection to the database.
+     * @param jsonFilename
+     * @return
      */
-    // Get the connection that's opened
-    public Connection getCurrentConnection () {
-        conn = openConnection ("remote_db.json");
-        return conn;
+    public Connection openConnection () {
+        return openConnection("db.json");
     }
 
     /**
@@ -109,36 +107,6 @@ public class ConnectionUtil {
             }
         }
         return null;
-    }
-
-    /**
-     * Close the connection if it's open.
-     * @param conn
-     */
-    public static void closeConnection (Connection conn) {
-        try {
-            if (conn != null)
-                conn.close();
-        }
-        catch (SQLException e) {
-            e.getStackTrace();
-        }
-    }
-
-    /**
-     * Close the connection if it's open using the default method.
-     * 
-     */
-    public void closeConnection () {
-        closeConnection (conn);
-    }
-
-    /**
-     * Retrieves the jdbc url used to connect to the database.
-     * @return String - the url
-     */
-    public String getUrl () {
-        return url;
     }
 
     /** Reads a json file in /src/main/resources for the database credentials.

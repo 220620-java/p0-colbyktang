@@ -1,11 +1,8 @@
 package com.revature.courseapp.data;
 
-import java.sql.SQLException;
-
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -17,34 +14,20 @@ import com.revature.courseapp.utils.List;
 
 public class DatabaseUsersTest {
 
-    static ConnectionUtil db;
     static UserDAO userDAO;
+    static ConnectionUtil db;
 
     @BeforeAll
     public static void OpenDatabase () {
-        // Try to use AWS DB
-        db = ConnectionUtil.getConnectionUtil();
+        db = ConnectionUtil.getConnectionUtil("local_db.json");
+        userDAO = new UserPostgres();
     }
 
-    @AfterAll
-    public static void afterAll () {
-        if (db != null && db.getCurrentConnection() != null)
-            db.closeConnection();
-    }
 
     @Test
     public void testGetAllUsers() {
         List<User> allUsers = userDAO.findAll();
         System.out.println(allUsers);
-        try {
-            db.getCurrentConnection().close();
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
-        catch (NullPointerException e) {
-            e.printStackTrace();
-        }
     }
 
     @Test
@@ -53,15 +36,6 @@ public class DatabaseUsersTest {
         assertTrue (userDAO.doesUserExist(student.getUsername()));
         Student noStudent = new Student (600, "Nobody", "Test", "ntest", "ntest@email.com");
         assertFalse (userDAO.doesUserExist(noStudent.getUsername()));
-        try {
-            db.getCurrentConnection().close();
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
-        catch (NullPointerException e) {
-            e.printStackTrace();
-        }
     }
 
     @Test

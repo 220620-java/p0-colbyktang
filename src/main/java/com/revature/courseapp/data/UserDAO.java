@@ -1,8 +1,6 @@
 package com.revature.courseapp.data;
 
-import com.revature.courseapp.models.Student;
 import com.revature.courseapp.models.User;
-import com.revature.courseapp.utils.List;
 
 public interface UserDAO extends DataAccessObject<User> {
 
@@ -36,12 +34,6 @@ public interface UserDAO extends DataAccessObject<User> {
      * @return boolean
      */
     public boolean doesUserExist (int user_id);
-
-    /** Get a list of all enrolled students of a particular course.
-     * @param course_id 
-     * @return List<Student>
-     */
-    public List<Student> getAllEnrolledStudents (int course_id);
 
     /** Validates a password using a username and password. Password will be encrypted and salted to match the given password.
      * @param username

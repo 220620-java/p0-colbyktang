@@ -72,7 +72,6 @@ public class App {
     public static boolean getIsLoggedIn () {
         return isLoggedIn;
     }
-
     
     /** 
      * @return Scanner
@@ -90,34 +89,17 @@ public class App {
     }
 
     public static void main (String[] args) {
-        userDAO = new UserPostgres();
-        courseDAO = new CoursePostgres();
+        
         scanner = new Scanner(System.in);
         System.out.println(
             "Welcome to Course Registration by Colby Tang!"
         );
         int input = 0;
-        while (input != 3) {
+        while (input != -1) {
             if (!isLoggedIn) {
                 input = LoginMenu();
-                switch (input) {
-                    // Login
-                    case 1:
-                    isLoggedIn = userLogin();
-                    break;
-    
-                    // Register
-                    case 2:
-                    RegisterStudent();
-                    break;
-    
-                    // Exit
-                    case 3:
-                    return;
-                }
             }
             else {
-                System.out.println(String.format ("Logged in as %s", loggedUser.getUsername()));
                 if (loggedUser.getUserType() == User.UserType.STUDENT) {
                     input = StudentMenu();
                 }
@@ -125,43 +107,59 @@ public class App {
                     input = FacultyMenu();
                 }
             }
-
-
         }
         System.out.println("EXITING APPLICATION!");
         scanner.close();
-        ConnectionUtil.getConnectionUtil().closeConnection();
     }
-
     
     /** 
      * @return int
      */
     public static int LoginMenu () {
-        System.out.println("Login Menu");
-        System.out.println("1. Login User");
-        System.out.println("2. Register As A Student");
-        System.out.println("3. Exit");
-        System.out.print(
-            "Please choose an option: "
-        );
+        if (userDAO == null)
+            userDAO = new UserPostgres();
+
+
         int input = 0;
-        
-        input = scanner.nextInt();
-        scanner.nextLine();
-        switch (input) {
-            case 1:
-                isLoggedIn = true;
-                return 1;
-            case 2:
-                return 2;
-            case 3:
-                return 3;
-            case 4:
-                FacultyMember user = new FacultyMember(201, "Colby", "Tang", "ctang2", "ctang2@email.com");
-                byte[] salt = Encryption.generateSalt();
-                String pass = Encryption.generateEncryptedPassword("pass", salt);
-                userDAO.create(user, pass, salt);
+
+        while (input != 3) {
+            System.out.println("Login Menu");
+            System.out.println("1. Login User");
+            System.out.println("2. Register As A Student");
+            System.out.println("3. Exit");
+            System.out.print(
+                "Please choose an option: "
+            );
+            
+            input = scanner.nextInt();
+            scanner.nextLine();
+            switch (input) {
+                case 1:
+                    isLoggedIn = userLogin();
+                    if (isLoggedIn) {
+                        System.out.println(String.format ("Logged in as %s", loggedUser.getUsername()));
+                        return 3;
+                    }
+                    else {
+                        System.out.println(String.format ("Could not login as %s", loggedUser.getUsername()));
+                    }
+                case 2:
+                    isLoggedIn = RegisterStudent();
+                    if (isLoggedIn) {
+                        System.out.println(String.format ("Logged in as %s", loggedUser.getUsername()));
+                        return 3;
+                    }
+                    else {
+                        System.out.println(String.format ("Could not login as %s", loggedUser.getUsername()));
+                    }
+                case 3:
+                    return 3;
+                case 422:
+                    FacultyMember user = new FacultyMember(201, "Colby", "Tang", "ctang2", "ctang2@email.com");
+                    byte[] salt = Encryption.generateSalt();
+                    String pass = Encryption.generateEncryptedPassword("pass", salt);
+                    userDAO.create(user, pass, salt);
+            }
         }
         return -1;
     }
@@ -172,10 +170,13 @@ public class App {
     public static boolean userLogin () {
         Scanner scanner = App.getScanner();
         String username = "";
+        
+        boolean isInputValid = false;
         do {
             System.out.print ("Enter your username: ");
             username = scanner.nextLine();
-        } while (username == "");
+            
+        } while (username == "" || !isInputValid);
 
         Console console = System.console();
 
@@ -195,7 +196,7 @@ public class App {
         return isPasswordValid;
     }
 
-    public static void RegisterStudent () {
+    public static boolean RegisterStudent () {
         Scanner scanner = App.getScanner();
         System.out.println(
             "Registering as a new student..."
@@ -236,6 +237,7 @@ public class App {
 
             if (!password.equals(verifyPassword)) {
                 System.out.println("Passwords do not match");
+                return false;
             }
         } while (!password.equals(verifyPassword) && password != "");
 
@@ -248,40 +250,47 @@ public class App {
         String pass = Encryption.generateEncryptedPassword(password, salt);
         userDAO.create(student, pass, salt);
         System.out.println(String.format ("Created student %s %s. ID: %d", firstName, lastName, student.getId()));
+        return true;
     }
     
     /** 
      * @return int
      */
     public static int StudentMenu () {
-        System.out.println("Student Menu");
-        System.out.println("1. View Available Classes");
-        System.out.println("2. Enroll Class");
-        System.out.println("3. Display Registered Classes");
-        System.out.println("4. Cancel Class Enrollment");
-        System.out.println("5. Logout");
-
+        if (courseDAO == null)
+            courseDAO = new CoursePostgres();
         int input = 0;
-        input = scanner.nextInt();
-        scanner.nextLine();
-        switch (input) {
-            case 1:
-                studentViewAvailableClasses();
-                return 1;
-            case 2:
-                studentEnrollClass ();
-                return 2;
-            case 3:
-                studentViewRegisteredClasses();
-                return 3;
-            case 4:
-                studentCancelClass();
-                return 4;
-            case 5:
-                isLoggedIn = false;
-                return -1;
+        while (input >= 0 && input <= 5) {
+            System.out.println("Student Menu");
+            System.out.println("1. View Available Classes");
+            System.out.println("2. Enroll Class");
+            System.out.println("3. Display Registered Classes");
+            System.out.println("4. Cancel Class Enrollment");
+            System.out.println("5. Logout");
+            System.out.print(
+                "Please choose an option: "
+            );
+            input = scanner.nextInt();
+            scanner.nextLine();
+            switch (input) {
+                case 1:
+                    studentViewAvailableClasses();
+                    break;
+                case 2:
+                    studentEnrollClass ();
+                    break;
+                case 3:
+                    studentViewRegisteredClasses();
+                    break;
+                case 4:
+                    studentCancelClass();
+                    break;
+                case 5:
+                    isLoggedIn = false;
+                    break;
+            }
         }
-        return -1;
+        return 0;
     }
 
     public static void studentViewAvailableClasses () {
@@ -309,9 +318,8 @@ public class App {
         System.out.print("Choose a class to enroll (Course ID): ");
         Scanner scanner = App.getScanner();
         String input = scanner.nextLine();
-        scanner.close();
         try {
-            System.out.println("Enrolling in + Course " + input + ".");
+            System.out.println("Enrolling in Course " + input + ".");
             courseDAO.enrollCourse(Integer.parseInt(input), loggedUser.getId());
         }
         catch (NumberFormatException e) {
@@ -326,6 +334,7 @@ public class App {
             System.out.println("NO REGISTERED CLASSES!");
             return;
         }
+        printDividerLine ();
         for (int i = 0; i < courses.size(); i++) {
             Course course = courses.get(i);
             String printString = String.format(
@@ -337,6 +346,7 @@ public class App {
                 );
             System.out.println(printString);
         }
+        printDividerLine ();
         return;
     }
 
@@ -344,7 +354,6 @@ public class App {
         System.out.print("Choose a class to CANCEL (Course ID): ");
         Scanner scanner = App.getScanner();
         String input = scanner.nextLine();
-        scanner.close();
         try {
             System.out.println("Cancelling enrollment in + Course " + input + ".");
             boolean isWithdrawn = courseDAO.withdrawFromCourse(Integer.parseInt(input), loggedUser.getId());
@@ -360,34 +369,41 @@ public class App {
      * @return int
      */
     public static int FacultyMenu () {
-        System.out.println("Faculty Menu");
-        System.out.println("1. View All Classes");
-        System.out.println("2. Add New Class");
-        System.out.println("3. Change Class Details");
-        System.out.println("4. Remove a Class");
-        System.out.println("5. Logout");
-
+        if (courseDAO == null)
+            courseDAO = new CoursePostgres();
         int input = 0;
-        input = scanner.nextInt();
-        scanner.nextLine();
-        switch (input) {
-            case 1:
-                facultyViewClasses();
-                return 1;
-            case 2:
-                facultyAddNewClass();
-                return 2;
-            case 3:
-                facultyChangeClassDetails ();
-                return 3;
-            case 4:
-            facultyRemoveClass ();
-                return 4;
-            case 5:
-                isLoggedIn = false;
-                return -1;
+
+        while (input >= 0 && input <= 5) {
+            System.out.println("Faculty Menu");
+            System.out.println("1. View All Classes");
+            System.out.println("2. Add New Class");
+            System.out.println("3. Change Class Details");
+            System.out.println("4. Remove a Class");
+            System.out.println("5. Logout");
+            System.out.print(
+                "Please choose an option: "
+            );
+            input = scanner.nextInt();
+            scanner.nextLine();
+            switch (input) {
+                case 1:
+                    facultyViewClasses();
+                    break;
+                case 2:
+                    facultyAddNewClass();
+                    break;
+                case 3:
+                    facultyChangeClassDetails ();
+                    break;
+                case 4:
+                    facultyRemoveClass ();
+                    break;
+                case 5:
+                    isLoggedIn = false;
+                    break;
+            }
         }
-        return -1;
+        return 0;
     }
 
     public static void facultyViewClasses() {
@@ -452,5 +468,9 @@ public class App {
         String input = scanner.nextLine();
         int course_id = Integer.parseInt(input);
         courseDAO.delete(course_id);
+    }
+
+    public static void printDividerLine () {
+        System.out.println("---------------------------");
     }
 }

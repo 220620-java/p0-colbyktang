@@ -1,0 +1,6 @@
+{
+    "endpoint": "revature-db.cbrtre28ms09.us-east-1.rds.amazonaws.com",
+    "username": "postgres",
+    "password": "L2C5p3SsvKZXWAAp82pX",
+    "ssl":      "false"
+}

@@ -49,7 +49,7 @@ public abstract class DatabaseUtils {
      */
     public static void truncateTable (String tableName) {
         PreparedStatement preparedStatement = null;
-        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
+        try (Connection conn = ConnectionUtil.getConnectionUtil().openConnection()) {
             String truncateSQLQuery = String.format ("Truncate table ? CASCADE");
             preparedStatement = conn.prepareStatement(truncateSQLQuery);
             preparedStatement.setString(1, tableName);

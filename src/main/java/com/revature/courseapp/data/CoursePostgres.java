@@ -3,6 +3,7 @@ package com.revature.courseapp.data;
 import java.sql.*;
 
 import com.revature.courseapp.models.Course;
+import com.revature.courseapp.models.Student;
 import com.revature.courseapp.utils.LinkedList;
 import com.revature.courseapp.utils.List;
 
@@ -12,6 +13,7 @@ import com.revature.courseapp.utils.List;
  * @version 1.0
  */
 public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
+    private ConnectionUtil connUtil = ConnectionUtil.getConnectionUtil();
 
     /** Inserts a course into the database if it doesn't already exist.
      * @param course
@@ -29,7 +31,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         " (?, ?, ?, ?, ?);";
 
         PreparedStatement preparedStatement = null;
-        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
+        try (Connection conn = connUtil.openConnection()) {
             // Prepare the preparedStatement for execution by filling user object fields
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setInt(1, course.getId());
@@ -68,16 +70,18 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         String query = "SELECT * FROM courses WHERE course_id=?";
         PreparedStatement preparedStatement = null;
         ResultSet result = null;
-        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
+        try (Connection conn = connUtil.openConnection()) {
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setInt(1, course_id);
             result = preparedStatement.executeQuery ();
-            while (result.next()) {
+            if (result.next()) {
                 String course_name = result.getString("course_name");
                 String semester = result.getString("semester");
                 int capacity = result.getInt("capacity");
 
-                return new Course(course_id, course_name, semester, capacity);
+                List<Student> students = getAllEnrolledStudents (course_id);
+
+                return new Course(course_id, course_name, semester, capacity, students);
             }
         }
         catch (SQLException e) {
@@ -107,7 +111,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         "WHERE course_id=?";
         
         PreparedStatement preparedStatement = null;
-        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
+        try (Connection conn = connUtil.openConnection()) {
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setString(1, course.getCourseName());
             preparedStatement.setString(2, course.getSemester());
@@ -135,7 +139,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
 
         String query = "DELETE FROM courses WHERE course_id=?";
         PreparedStatement preparedStatement = null;
-        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
+        try (Connection conn = connUtil.openConnection()) {
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setInt(1, course.getId());
             preparedStatement.executeUpdate();
@@ -164,7 +168,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
 
         String query = "DELETE FROM courses WHERE course_id=?";
         PreparedStatement preparedStatement = null;
-        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
+        try (Connection conn = connUtil.openConnection()) {
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setInt(1, course_id);
             preparedStatement.executeUpdate();
@@ -194,7 +198,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
 
         Statement statement = null;
         ResultSet result = null;
-        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
+        try (Connection conn = connUtil.openConnection()) {
             statement = conn.createStatement();
             result = statement.executeQuery (query);
             while (result.next()) {
@@ -202,7 +206,9 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
                 String course_name = result.getString("course_name");
                 String semester = result.getString("semester");
                 int capacity = result.getInt("capacity");
-                availableCourses.add(new Course(course_id, course_name, semester, capacity));
+                List<Student> students = getAllEnrolledStudents (course_id);
+
+                availableCourses.add(new Course(course_id, course_name, semester, capacity, students));
             }
         }
         catch (SQLException e) {
@@ -224,7 +230,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
 
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
-        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
+        try (Connection conn = connUtil.openConnection()) {
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setInt(1, course_id);
             resultSet = preparedStatement.executeQuery();
@@ -258,7 +264,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         ResultSet result = null;
         Statement courseStatement = null;
         ResultSet courseResult = null;
-        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
+        try (Connection conn = connUtil.openConnection()) {
 
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setInt(1, student_id);
@@ -273,8 +279,9 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
                     String course_name = courseResult.getString("course_name");
                     String semester = courseResult.getString("semester");
                     int capacity = courseResult.getInt("capacity");
+                    List<Student> students = getAllEnrolledStudents (course_id);
 
-                    enrolledCourses.add(new Course(course_id, course_name, semester, capacity));
+                    enrolledCourses.add(new Course(course_id, course_name, semester, capacity, students));
                 }
             }
         }
@@ -289,7 +296,56 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         return enrolledCourses;
     }
-   
+
+    /** Get a list of all enrolled students of a particular course.
+     * @param course_id 
+     * @return List<Student>
+     */
+    public List<Student> getAllEnrolledStudents (int course_id) {
+        List<Student> enrolledStudents = new LinkedList<>();
+        String query = "SELECT user_id FROM courses_users WHERE course_id=?";
+
+        PreparedStatement preparedStatement = null;
+        ResultSet result = null;
+        Statement userStatement = null;
+        ResultSet userResult = null;
+        try (Connection conn = connUtil.openConnection()) {
+            preparedStatement = conn.prepareStatement(query);
+            preparedStatement.setInt(1, course_id);
+            result = preparedStatement.executeQuery ();
+            while (result.next()) {
+                int user_id = result.getInt ("user_id");
+                query = String.format ("SELECT user_id, first_name, last_name, username, email, usertype FROM users WHERE user_id=%d", user_id);
+                userStatement = conn.createStatement();
+                userResult = userStatement.executeQuery(query);
+                while (userResult.next()) {
+                    int id = userResult.getInt ("user_id");
+                    String firstName = userResult.getString("first_name");
+                    String lastName = userResult.getString("last_name");
+                    String username = userResult.getString("username");
+                    String email = userResult.getString("email");
+                    String usertype = userResult.getString ("usertype");
+
+                    switch (usertype) {
+                        case "STUDENT":
+                        enrolledStudents.add(new Student(id, firstName, lastName, username, email));
+                        break;
+                    }
+                }
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
+            closeQuietly(preparedStatement);
+            closeQuietly(userStatement);
+            closeQuietly(result);
+            closeQuietly(userResult);
+        }
+        return enrolledStudents;
+    }
+
     /** Have a student enroll in a course by adding it to the courses_users table.
      * @param course
      * @param student
@@ -300,9 +356,36 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
 
         PreparedStatement preparedStatement = null;
-        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {;
-            String courseUserQuery = "INSERT INTO courses_users (course_id, user_id) VALUES (?, ?)";
-            preparedStatement = conn.prepareStatement(courseUserQuery);
+        try (Connection conn = connUtil.openConnection()) {;
+            // Is student already enrolled?
+            String query = "SELECT * from courses_users where course_id=? and user_id=?";
+            preparedStatement = conn.prepareStatement(query);
+            preparedStatement.setInt(1, course_id);
+            preparedStatement.setInt(2, student_id);
+            ResultSet result = preparedStatement.executeQuery();
+            if (result.next()) {
+                System.out.println("Student already enrolled!");
+                return;
+            }
+            preparedStatement.close();
+            
+            // Is course full?
+            query = "SELECT size, capacity from courses where course_id=?";
+            preparedStatement = conn.prepareStatement(query);
+            preparedStatement.setInt(1, course_id);
+            result = preparedStatement.executeQuery();
+            if (result.next()) {
+                int size = result.getInt("size");
+                int capacity = result.getInt("capacity");
+                if (size >= capacity) {
+                    System.out.println("COURSE IS FULL!");
+                    return;
+                }
+            }
+            preparedStatement.close();
+
+            query = "INSERT INTO courses_users (course_id, user_id) VALUES (?, ?)";
+            preparedStatement = conn.prepareStatement(query);
             preparedStatement.setInt(1, course_id);
             preparedStatement.setInt(2, student_id);
 
@@ -313,7 +396,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
             System.out.println("Enrolled user!");
 
             // Increase the size of the course
-            String query = "UPDATE courses SET " +
+            query = "UPDATE courses SET " +
                 "size=size+1" +
                 "WHERE course_id=?";
             preparedStatement = conn.prepareStatement(query);
@@ -335,9 +418,22 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
      * @return boolean
      */
     public boolean withdrawFromCourse (int course_id, int student_id) {
-        String query = "DELETE FROM courses_users WHERE course_id=? AND user_id=?";
+        
         PreparedStatement preparedStatement = null;
-        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
+        try (Connection conn = connUtil.openConnection()) {
+            // Verify that the enrollment exists
+            String query = "SELECT course_id from courses_users WHERE course_id=? AND user_id=?";
+            preparedStatement = conn.prepareStatement(query);
+            preparedStatement.setInt(1, course_id);
+            preparedStatement.setInt(2, student_id);
+            ResultSet result = preparedStatement.executeQuery();
+            if (!result.next()) {
+                System.out.println("COULD NOT FIND ENROLLMENT!");
+                return false;
+            }
+            preparedStatement.close();
+
+            query = "DELETE FROM courses_users WHERE course_id=? AND user_id=?";
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setInt(1, course_id);
             preparedStatement.setInt(2, student_id);

@@ -15,6 +15,7 @@ import com.revature.courseapp.utils.List;
  * @version 1.0
  */
 public class UserPostgres extends DatabaseUtils implements UserDAO {
+    private ConnectionUtil connUtil = ConnectionUtil.getConnectionUtil();
 
     /** Inserts a user into the table users.
      *  @param user The object to be added to the data source
@@ -34,7 +35,7 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         "  (user_id, first_name, last_name, username, email, usertype) VALUES " +
         " (?, ?, ?, ?, ?, ?);";
         PreparedStatement preparedStatement = null;
-        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
+        try (Connection conn = connUtil.openConnection()) {
             
             // Prepare the statement for execution by filling user object fields
             preparedStatement = conn.prepareStatement(query);
@@ -78,7 +79,7 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         "  (user_id, first_name, last_name, username, email, usertype, password, salt) VALUES " +
         " (?, ?, ?, ?, ?, ?, ?, ?);";
         PreparedStatement preparedStatement = null;
-        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
+        try (Connection conn = connUtil.openConnection()) {
 
             // Prepare the statement for execution by filling user object fields
             preparedStatement = conn.prepareStatement(query);
@@ -116,7 +117,7 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         String query = "SELECT * FROM users WHERE user_id=?";
         PreparedStatement preparedStatement = null;
         ResultSet result = null;
-        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
+        try (Connection conn = connUtil.openConnection()) {
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setInt(1, user_id);
             result = preparedStatement.executeQuery();
@@ -161,7 +162,7 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         String query = "SELECT * FROM users WHERE username=?";
         PreparedStatement preparedStatement = null;
         ResultSet result = null;
-        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
+        try (Connection conn = connUtil.openConnection()) {
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setString(1, username);
             result = preparedStatement.executeQuery();
@@ -204,7 +205,7 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         String sqlQuery = "SELECT * FROM users";
         Statement statement = null;
         ResultSet result = null;
-        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
+        try (Connection conn = connUtil.openConnection()) {
             statement = conn.createStatement();
             result = statement.executeQuery(sqlQuery);
             List<User> allUsers = new LinkedList<User>();
@@ -258,7 +259,7 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         "WHERE user_id=?";
         
         PreparedStatement preparedStatement = null;
-        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
+        try (Connection conn = connUtil.openConnection()) {
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setString(1, user.getFirstName());
             preparedStatement.setString(2, user.getLastName());
@@ -288,7 +289,7 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         PreparedStatement preparedStatement = null;
 
         String query = "DELETE FROM users WHERE username=?";
-        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
+        try (Connection conn = connUtil.openConnection()) {
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setString(1, user.getUsername());
             preparedStatement.executeUpdate();
@@ -314,7 +315,7 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         String query = "SELECT * FROM users WHERE user_id=? AND username=?";
         PreparedStatement preparedStatement = null;
         ResultSet result = null;
-        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
+        try (Connection conn = connUtil.openConnection()) {
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setInt(1, user_id);
             preparedStatement.setString(2, username);
@@ -343,7 +344,7 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         String query = "SELECT * FROM users WHERE username=?";
         PreparedStatement preparedStatement = null;
         ResultSet result = null;
-        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
+        try (Connection conn = connUtil.openConnection()) {
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setString(1, username);
             result = preparedStatement.executeQuery(query);
@@ -371,7 +372,7 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         String query = "SELECT * FROM users WHERE user_id=?";
         PreparedStatement preparedStatement = null;
         ResultSet result = null;
-        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
+        try (Connection conn = connUtil.openConnection()) {
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setInt(1, user_id);
             result = preparedStatement.executeQuery(query);
@@ -391,54 +392,7 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         return false;
     }
 
-    /** Get a list of all enrolled students of a particular course.
-     * @param course_id 
-     * @return List<Student>
-     */
-    public List<Student> getAllEnrolledStudents (int course_id) {
-        List<Student> enrolledStudents = new LinkedList<>();
-        String query = "SELECT user_id FROM coursesusers WHERE course_id=?";
 
-        PreparedStatement preparedStatement = null;
-        ResultSet result = null;
-        Statement userStatement = null;
-        ResultSet userResult = null;
-        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
-            preparedStatement = conn.prepareStatement(query);
-            preparedStatement.setInt(1, course_id);
-            result = preparedStatement.executeQuery ();
-            while (result.next()) {
-                int user_id = result.getInt ("user_id");
-                query = String.format ("SELECT user_id, first_name, last_name, username, email, usertype FROM users WHERE user_id=%d", user_id);
-                userStatement = conn.createStatement();
-                userResult = userStatement.executeQuery(query);
-                while (userResult.next()) {
-                    int id = result.getInt ("user_id");
-                    String firstName = result.getString("first_name");
-                    String lastName = result.getString("last_name");
-                    String username = result.getString("username");
-                    String email = result.getString("email");
-                    String usertype = result.getString ("usertype");
-
-                    switch (usertype) {
-                        case "STUDENT":
-                        enrolledStudents.add(new Student(id, firstName, lastName, username, email));
-                        break;
-                    }
-                }
-            }
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
-        finally {
-            closeQuietly(preparedStatement);
-            closeQuietly(userStatement);
-            closeQuietly(result);
-            closeQuietly(userResult);
-        }
-        return enrolledStudents;
-    }
        
     /** Validates a password using a username and password. Password will be encrypted and salted to match the given password.
      * @param username
@@ -449,7 +403,7 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         String selectSQLQuery = String.format ("SELECT password, salt FROM users WHERE username='%s'", username);
         Statement statement = null;
         ResultSet result = null;
-        try (Connection conn = ConnectionUtil.getConnectionUtil().getCurrentConnection()) {
+        try (Connection conn = connUtil.openConnection()) {
             statement = conn.createStatement();
             result = statement.executeQuery(selectSQLQuery);
             if (result.next()) {
