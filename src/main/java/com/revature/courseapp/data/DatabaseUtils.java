@@ -6,6 +6,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/* Methods used by Postgres database implementations.
+*  
+* @author Colby Tang
+* @version 1.0
+*/
 public abstract class DatabaseUtils {
 
     /** Close statement with exception handling.

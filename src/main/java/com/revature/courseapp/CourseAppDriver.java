@@ -2,16 +2,8 @@ package com.revature.courseapp;
 import java.io.Console;
 import java.util.Scanner;
 
-import com.revature.courseapp.utils.Encryption;
-import com.revature.courseapp.utils.List;
 import com.revature.courseapp.utils.Validation;
-import com.revature.courseapp.data.CoursePostgres;
-import com.revature.courseapp.data.UserDAO;
-import com.revature.courseapp.data.UserPostgres;
 import com.revature.courseapp.data.ConnectionUtil;
-import com.revature.courseapp.data.CourseDAO;
-import com.revature.courseapp.models.Course;
-import com.revature.courseapp.models.FacultyMember;
 import com.revature.courseapp.models.Student;
 import com.revature.courseapp.models.User;
 import com.revature.courseapp.services.UserService;
@@ -90,10 +82,18 @@ public class CourseAppDriver {
         loggedUser = user;
     }
 
+    
+    /** 
+     * @return User
+     */
     public static User getLoggedUser () {
         return loggedUser;
     }
 
+    
+    /** 
+     * @param args
+     */
     public static void main (String[] args) {
         System.out.println(
             "Welcome to Course Registration by Colby Tang!"
@@ -181,6 +181,10 @@ public class CourseAppDriver {
         return userService.userLogin(username, password);
     }
 
+    
+    /** 
+     * @return boolean
+     */
     public static boolean registerStudent () {
         Scanner scanner = CourseAppDriver.getScanner();
         System.out.println(

@@ -31,6 +31,7 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
             return null;
         }
 
+        // Insert the user into the database
         String query = "INSERT INTO users" +
         "  (user_id, first_name, last_name, username, email, usertype) VALUES " +
         " (?, ?, ?, ?, ?, ?);";

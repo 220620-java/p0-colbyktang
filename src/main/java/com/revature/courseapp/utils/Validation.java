@@ -4,6 +4,11 @@ import java.util.regex.*;
 
 public class Validation {
 
+    
+    /** 
+     * @param username
+     * @return boolean
+     */
     public static boolean isUsernameValid (String username) {
         // Regex string to validate username.
         // Allow usernames from 5 characters to 30.
@@ -21,5 +26,23 @@ public class Validation {
   
         // True if username is valid.
         return m.matches();
+    }
+
+    
+    /** 
+     * @param password
+     * @return boolean
+     */
+    public static boolean isPasswordValid (String password) {
+        return false;
+    }
+
+    
+    /** 
+     * @param email
+     * @return boolean
+     */
+    public static boolean isEmailValid (String email) {
+
     }
 }

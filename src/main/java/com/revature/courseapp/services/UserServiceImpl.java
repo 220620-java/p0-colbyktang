@@ -12,10 +12,17 @@ import com.revature.courseapp.models.Student;
 import com.revature.courseapp.utils.Encryption;
 import com.revature.courseapp.utils.List;
 
+
 public class UserServiceImpl implements UserService {
     private UserDAO userDAO = new UserPostgres();
     private CourseDAO courseDAO = new CoursePostgres();
 
+    
+    /** Logins in the user by first checking the password
+     * @param username
+     * @param password
+     * @return boolean
+     */
     @Override
     public boolean userLogin (String username, String password) {
         // Check user from the database
@@ -110,6 +117,7 @@ public class UserServiceImpl implements UserService {
         List<Course> allCourses = courseDAO.findAll();
         System.out.println("Displaying all classes...");
         for (int i = 0; i < allCourses.size(); i++) {
+
             System.out.println(allCourses.get(i));
         }
     }
@@ -177,6 +185,11 @@ public class UserServiceImpl implements UserService {
         System.out.println("---------------------------");
     }
 
+    
+    /** 
+     * @param student
+     * @param password
+     */
     @Override
     public void registerStudent(Student student, String password) {
         // Add student to the database

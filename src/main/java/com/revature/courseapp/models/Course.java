@@ -163,7 +163,7 @@ public class Course {
     /**
      * A string template for toString.
      */
-    private static final String ToStringTemplate = "CourseID: = %d, Course Name = %s, Semester = %s, Capacity = %d, EnrolledStudents = %s";
+    private static final String ToStringTemplate = "CourseID: %d, Course Name: %s, Semester: %s, Capacity: %d, EnrolledStudents: %s";
 
     
     /** 
