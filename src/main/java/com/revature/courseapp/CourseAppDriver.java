@@ -180,7 +180,6 @@ public class CourseAppDriver {
 
         return userService.userLogin(username, password);
     }
-
     
     /** 
      * @return boolean
@@ -205,30 +204,48 @@ public class CourseAppDriver {
         } while (lastName == "");
         
         String username = "";
+        boolean isUsernameValid = false;
         do {
+            System.out.println("Username (5-30 characters, start with a letter)");
             System.out.print ("Enter your username: ");
             username = scanner.nextLine();
-        } while (username == "");
+            isUsernameValid = Validation.isUsernameValid(username);
+            if (!isUsernameValid) {
+                System.out.println("Username is not valid!");
+            }
+        } while (!isUsernameValid);
 
         String email = "";
+        boolean isEmailValid = false;
         do {
             System.out.print ("Enter your email: ");
             email = scanner.nextLine();
-        } while (email == "");
+            isEmailValid = Validation.isEmailValid(email);
+            if (!isEmailValid) {
+                System.out.println("Email is not in valid form: xxx@xxx.com");
+            }
+        } while (!isEmailValid);
 
         Console console = System.console();
-
         String password;
         String verifyPassword;
+        boolean isPasswordValid = false;
         do {
-            password = new String (console.readPassword("Enter your password: "));
+            do {
+                System.out.println("Password (4-32 characters)");
+                password = new String (console.readPassword("Enter your password: "));
+                isPasswordValid = Validation.isPasswordValid(password);
+                if (!isPasswordValid) {
+                    System.out.println("Password is not valid!");
+                }
+            } while (!isPasswordValid);
+
             verifyPassword = new String (console.readPassword("Enter your password again: "));
 
             if (!password.equals(verifyPassword)) {
                 System.out.println("Passwords do not match");
-                return false;
             }
-        } while (!password.equals(verifyPassword) && password != "");
+        } while (!password.equals(verifyPassword));
 
         System.out.println("Passwords match!");
         
