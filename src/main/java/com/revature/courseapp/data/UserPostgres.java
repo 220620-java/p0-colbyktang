@@ -31,6 +31,7 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
             return null;
         }
 
+        // Insert the user into the database
         String query = "INSERT INTO users" +
         "  (user_id, first_name, last_name, username, email, usertype) VALUES " +
         " (?, ?, ?, ?, ?, ?);";
@@ -319,7 +320,7 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setInt(1, user_id);
             preparedStatement.setString(2, username);
-            result = preparedStatement.executeQuery(query);
+            result = preparedStatement.executeQuery();
             if (result.next()) {
                 System.out.println("User " + result.getInt("user_id") + " exists!");
                 return true;
@@ -347,7 +348,7 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         try (Connection conn = connUtil.openConnection()) {
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setString(1, username);
-            result = preparedStatement.executeQuery(query);
+            result = preparedStatement.executeQuery();
             if (result.next()) {
                 System.out.println("User " + result.getInt("user_id") + " exists!");
                 return true;
@@ -375,7 +376,7 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         try (Connection conn = connUtil.openConnection()) {
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setInt(1, user_id);
-            result = preparedStatement.executeQuery(query);
+            result = preparedStatement.executeQuery();
             if (result.next()) {
                 System.out.println("User " + result.getInt("user_id") + " exists!");
                 return true;
@@ -391,8 +392,6 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         }
         return false;
     }
-
-
        
     /** Validates a password using a username and password. Password will be encrypted and salted to match the given password.
      * @param username

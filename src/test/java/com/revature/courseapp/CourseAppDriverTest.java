@@ -4,6 +4,6 @@ package com.revature.courseapp;
 import org.junit.jupiter.api.Test;
 
 
-public class AppTest {
+public class CourseAppDriverTest {
 
 }

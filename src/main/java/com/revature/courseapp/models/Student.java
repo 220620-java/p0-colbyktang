@@ -40,7 +40,7 @@ public class Student extends User {
     /**
      * A String template for printing out the fields of a Student
      */
-    private static final String ToStringTemplate = "StudentID: = %1s, First Name = %2s, Last Name = %3s, Username = %4s, Email = %5s";
+    private static final String ToStringTemplate = "StudentID: %1s, First Name: %2s, Last Name: %3s, Username: %4s, Email: %5s";
 
     /** 
      * @return String

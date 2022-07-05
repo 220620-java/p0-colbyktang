@@ -258,31 +258,23 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
      */
     public List<Course> getAllEnrolledCourses (int student_id) {
         List<Course> enrolledCourses = new LinkedList<>();
-        String query = "SELECT course_id FROM courses_users WHERE user_id=?";
+        String query = "SELECT courses.course_id, course_name, semester, capacity, size FROM courses, courses_users WHERE courses.course_id = courses_users.course_id and courses_users.user_id = ?;";
 
         PreparedStatement preparedStatement = null;
         ResultSet result = null;
-        Statement courseStatement = null;
-        ResultSet courseResult = null;
         try (Connection conn = connUtil.openConnection()) {
 
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setInt(1, student_id);
             result = preparedStatement.executeQuery ();
-
             while (result.next()) {
-                int course_id = result.getInt ("course_id");
-                query = String.format ("SELECT * FROM courses WHERE course_id=%d", course_id);
-                courseStatement = conn.createStatement();
-                courseResult = courseStatement.executeQuery(query);
-                while (courseResult.next()) {
-                    String course_name = courseResult.getString("course_name");
-                    String semester = courseResult.getString("semester");
-                    int capacity = courseResult.getInt("capacity");
-                    List<Student> students = getAllEnrolledStudents (course_id);
+                int course_id = result.getInt("course_id");
+                String course_name = result.getString("course_name");
+                String semester = result.getString("semester");
+                int capacity = result.getInt("capacity");
+                List<Student> students = getAllEnrolledStudents (course_id);
 
-                    enrolledCourses.add(new Course(course_id, course_name, semester, capacity, students));
-                }
+                enrolledCourses.add(new Course(course_id, course_name, semester, capacity, students));
             }
         }
         catch (SQLException e) {
@@ -291,8 +283,6 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         finally {
             closeQuietly(preparedStatement);
             closeQuietly(result);
-            closeQuietly(courseStatement);
-            closeQuietly(courseResult);
         }
         return enrolledCourses;
     }
@@ -303,34 +293,24 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
      */
     public List<Student> getAllEnrolledStudents (int course_id) {
         List<Student> enrolledStudents = new LinkedList<>();
-        String query = "SELECT user_id FROM courses_users WHERE course_id=?";
+        String query = "SELECT u.user_id, u.first_name, u.last_name, u.username, u.email, u.usertype FROM users u, courses_users cu WHERE cu.course_id = 101 and cu.user_id = u.user_id;";
 
         PreparedStatement preparedStatement = null;
         ResultSet result = null;
-        Statement userStatement = null;
-        ResultSet userResult = null;
         try (Connection conn = connUtil.openConnection()) {
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setInt(1, course_id);
             result = preparedStatement.executeQuery ();
             while (result.next()) {
-                int user_id = result.getInt ("user_id");
-                query = String.format ("SELECT user_id, first_name, last_name, username, email, usertype FROM users WHERE user_id=%d", user_id);
-                userStatement = conn.createStatement();
-                userResult = userStatement.executeQuery(query);
-                while (userResult.next()) {
-                    int id = userResult.getInt ("user_id");
-                    String firstName = userResult.getString("first_name");
-                    String lastName = userResult.getString("last_name");
-                    String username = userResult.getString("username");
-                    String email = userResult.getString("email");
-                    String usertype = userResult.getString ("usertype");
+                int id = result.getInt ("user_id");
+                String firstName = result.getString("first_name");
+                String lastName = result.getString("last_name");
+                String username = result.getString("username");
+                String email = result.getString("email");
+                String usertype = result.getString ("usertype");
 
-                    switch (usertype) {
-                        case "STUDENT":
-                        enrolledStudents.add(new Student(id, firstName, lastName, username, email));
-                        break;
-                    }
+                if (usertype == "STUDENT") {
+                    enrolledStudents.add(new Student(id, firstName, lastName, username, email));
                 }
             }
         }
@@ -339,9 +319,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         finally {
             closeQuietly(preparedStatement);
-            closeQuietly(userStatement);
             closeQuietly(result);
-            closeQuietly(userResult);
         }
         return enrolledStudents;
     }

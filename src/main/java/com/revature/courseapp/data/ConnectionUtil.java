@@ -82,7 +82,7 @@ public class ConnectionUtil {
             props.setProperty("ssl", ssl);
 
             String url = String.format ("jdbc:postgresql://%s:5432/", endpoint);
-            System.out.println("Establishing connection to remote database...");
+            System.out.print(".");
             return DriverManager.getConnection(url, props);
         }
         catch (SQLException e) {
@@ -99,7 +99,7 @@ public class ConnectionUtil {
                 props.setProperty("ssl", ssl);
 
                 String url = String.format ("jdbc:postgresql://%s:5432/", endpoint);
-                System.out.println("Establishing connection to local database...");
+                System.out.print("*");
                 return DriverManager.getConnection(url, props);
             }
             catch (SQLException ex) {

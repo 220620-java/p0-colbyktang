@@ -4,6 +4,14 @@ import com.revature.courseapp.models.Course;
 import com.revature.courseapp.models.Student;
 import com.revature.courseapp.utils.List;
 
+/** Course Data Access Object offers more specific implementation
+ * than the regular DAO such as retrieving all students that are
+ * enrolled in a particular course or all the courses a student
+ * is registered in.
+ * 
+ * @author Colby Tang
+ * @version 1.0
+ */
 public interface CourseDAO extends DataAccessObject<Course>{
     /** Removes a course from the catalog. It should also delete any students enrolled into the class.
      * @param course_id
