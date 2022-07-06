@@ -34,16 +34,16 @@ public class UserTest {
     @Test 
     public void StudentToString() {
         Student student = new Student(
-            101,
-            "John", 
-            "Smith", 
-            "jsmith", 
-            "jsmith@email.com",
+            1,
+            "Joe", 
+            "Test", 
+            "jtest", 
+            "jtest@email.com",
             "Comp Sci", 
             3.0f
         );
         
-        String expected = "StudentID: = 101, First Name = John, Last Name = Smith, Username = jsmith, Email = jsmith@email.com";
+        String expected = "StudentID: 1, First Name: Joe, Last Name: Test, Username: jtest, Email: jtest@email.com, Major: Comp Sci, GPA: 3.000000";
         System.out.println(student);
         assertEquals(expected, student.toString());
         expected = "STUDENT";
@@ -82,7 +82,7 @@ public class UserTest {
             "Comp Sci"
         );
         
-        String expected = "FacultyID: = 101, First Name = Joe, Last Name = Shmoe, Username = jshmoe, Email = jshmoe@email.com";
+        String expected = "FacultyID: 101, First Name: Joe, Last Name: Shmoe, Username: jshmoe, Email: jshmoe@email.com, Department: Comp Sci";
         System.out.println(faculty);
         assertEquals(expected, faculty.toString());
     }
