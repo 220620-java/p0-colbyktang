@@ -48,4 +48,11 @@ public interface CourseDAO extends DataAccessObject<Course>{
      * @return boolean
      */
     public boolean withdrawFromCourse (int course_id, int student_id);
+
+    /**
+     * Retrieve all available courses for the semester.
+     * @param conn
+     * @return
+     */
+    public List<Course> findAllAvailable();
 }

@@ -24,16 +24,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class DatabaseUsersTest {
 
     @InjectMocks
-    private UserDAO mockUserDAO;
-
-    static UserDAO userDAO;
-
-    @BeforeAll
-    public void OpenDatabase () {
-        userDAO = new UserPostgres("local_db.json");
-        mockUserDAO = Mockito.mock (userDAO.getClass());
-    }
-
+    private UserDAO mockUserDAO = new UserPostgres("local_db.json");
+    
+    private UserDAO userDAO = new UserPostgres("local_db.json");
 
     @Test
     public void testGetAllUsers() {

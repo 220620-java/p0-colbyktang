@@ -90,6 +90,21 @@ public class Course {
     }
 
     /**
+     * Constructor for initializing a course with NO students or ID
+     * @param id
+     * @param name
+     * @param semester
+     * @param capacity
+     * @param isAvailable
+     */
+    public Course (String name, String semester, int capacity, boolean isAvailable) {
+        this.courseName = name;
+        this.semester = semester;
+        this.capacity = capacity;
+        this.isAvailable = isAvailable;
+    }
+
+    /**
      * Constructor for initializing a course with NO students
      * @param id
      * @param name

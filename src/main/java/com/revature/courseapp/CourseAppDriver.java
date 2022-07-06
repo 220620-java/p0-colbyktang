@@ -144,7 +144,7 @@ public class CourseAppDriver {
                         return "3";
                     }
                     else {
-                        System.out.println(String.format ("Could not login as %s", loggedUser.getUsername()));
+                        System.out.println(String.format ("Could not login!"));
                     }
                 case "2":
                     try {
@@ -155,7 +155,7 @@ public class CourseAppDriver {
                             return "3";
                         }
                         else {
-                            System.out.println(String.format ("Could not login as %s", loggedUser.getUsername()));
+                            System.out.println(String.format ("Could not login!"));
                         }
                     }
                     catch (UserAlreadyExistsException e) {

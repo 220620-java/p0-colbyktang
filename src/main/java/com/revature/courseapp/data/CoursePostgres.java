@@ -6,6 +6,7 @@ import com.revature.courseapp.models.Course;
 import com.revature.courseapp.models.Student;
 import com.revature.courseapp.utils.LinkedList;
 import com.revature.courseapp.utils.List;
+import com.revature.courseapp.utils.Logger;
 
 /** This class handles PostgresSQL queries for the table courses and courses_users.
  *  
@@ -35,8 +36,8 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
 
         String query = "INSERT INTO courses" +
-        "  (course_id, course_name, semester, capacity, size) VALUES " +
-        " (?, ?, ?, ?, ?);";
+        "  (course_id, course_name, semester, capacity, is_available, size) VALUES " +
+        " (?, ?, ?, ?, ?, ?);";
 
         PreparedStatement preparedStatement = null;
         try (Connection conn = connUtil.openConnection()) {
@@ -46,7 +47,8 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
             preparedStatement.setString(2, course.getCourseName());
             preparedStatement.setString(3, course.getSemester());
             preparedStatement.setInt(4, course.getCapacity());
-            preparedStatement.setInt(5, course.getNumberOfStudents());
+            preparedStatement.setBoolean(5, course.getIsAvailable());
+            preparedStatement.setInt(6, course.getNumberOfStudents());
 
             // Execute preparedStatement
             System.out.println(
@@ -59,9 +61,11 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         catch (SQLException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getMessage());
         }
         catch (Exception e) {
             e.printStackTrace();
+            Logger.logMessage(e.getMessage());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -95,6 +99,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         catch (SQLException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getMessage());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -131,6 +136,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         catch (SQLException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getMessage());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -196,14 +202,49 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
     }
 
     /**
+     * Retrieve all courses.
+     * @return
+     */
+    @Override
+    public List<Course> findAll() {
+        List<Course> courses = new LinkedList<>();
+        String query = String.format ("SELECT * FROM courses order by course_id");
+
+        Statement statement = null;
+        ResultSet result = null;
+        try (Connection conn = connUtil.openConnection()) {
+            statement = conn.createStatement();
+            result = statement.executeQuery (query);
+            while (result.next()) {
+                int course_id = result.getInt ("course_id");
+                String course_name = result.getString("course_name");
+                String semester = result.getString("semester");
+                int capacity = result.getInt("capacity");
+                boolean is_available = result.getBoolean("is_available");
+                List<Student> students = getAllEnrolledStudents (course_id);
+
+                courses.add(new Course(course_id, course_name, semester, capacity, is_available, students));
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        finally {
+            closeQuietly(statement);
+            closeQuietly(result);
+        }
+        return courses;
+    }
+
+    /**
      * Retrieve all available courses for the semester.
      * @param conn
      * @return
      */
     @Override
-    public List<Course> findAll() {
+    public List<Course> findAllAvailable() {
         List<Course> availableCourses = new LinkedList<>();
-        String query = String.format ("SELECT * FROM courses order by course_id");
+        String query = String.format ("SELECT * FROM courses where is_available=true order by course_id");
 
         Statement statement = null;
         ResultSet result = null;
@@ -304,7 +345,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
      */
     public List<Student> getAllEnrolledStudents (int course_id) {
         List<Student> enrolledStudents = new LinkedList<>();
-        String query = "SELECT u.user_id, u.first_name, u.last_name, u.username, u.email, u.usertype, s.major, s.gpa FROM users u, courses_users cu, students s WHERE cu.course_id = 101 and cu.user_id = u.user_id;";
+        String query = "SELECT u.user_id, u.first_name, u.last_name, u.username, u.email, u.usertype, s.major, s.gpa FROM users u, courses_users cu, students s WHERE cu.course_id = ? and cu.user_id = u.user_id;";
 
         PreparedStatement preparedStatement = null;
         ResultSet result = null;
@@ -360,16 +401,21 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
             }
             preparedStatement.close();
             
-            // Is course full?
-            query = "SELECT size, capacity from courses where course_id=?";
+            // Is course full or available?
+            query = "SELECT size, capacity, is_available from courses where course_id=?";
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setInt(1, course_id);
             result = preparedStatement.executeQuery();
             if (result.next()) {
                 int size = result.getInt("size");
                 int capacity = result.getInt("capacity");
+                boolean isAvailable = result.getBoolean("is_available");
                 if (size >= capacity) {
                     System.out.println("COURSE IS FULL!");
+                    return;
+                }
+                if (!isAvailable) {
+                    System.out.println("COURSE IS NOT AVAILABLE!");
                     return;
                 }
             }

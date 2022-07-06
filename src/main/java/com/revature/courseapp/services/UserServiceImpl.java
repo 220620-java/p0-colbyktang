@@ -13,13 +13,14 @@ import com.revature.courseapp.models.Course;
 import com.revature.courseapp.models.User;
 import com.revature.courseapp.models.Student;
 import com.revature.courseapp.utils.List;
+import com.revature.courseapp.utils.Logger;
 import com.revature.courseapp.utils.Validation;
 
 
 public class UserServiceImpl implements UserService {
     private UserDAO userDAO = new UserPostgres();
     private CourseDAO courseDAO = new CoursePostgres();
-    
+
     /** Logins in the user by first checking the password
      * @param username
      * @param password
@@ -42,7 +43,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void studentViewAvailableClasses () {
         System.out.println("Viewing Available Classes...");
-        List<Course> courses = courseDAO.findAll();
+        List<Course> courses = courseDAO.findAllAvailable();
         if (courses.size() == 0) {
             System.out.println("NO AVAILABLE CLASSES!");
             return;
@@ -129,12 +130,9 @@ public class UserServiceImpl implements UserService {
     public void facultyAddNewClass () {
         Scanner scanner = CourseAppDriver.getScanner();
         System.out.println("Adding new class...");
-        System.out.print("Enter a course id: ");
-        String input = scanner.nextLine();
-        int course_id = Integer.parseInt(input);
 
         System.out.print("Enter a course name: ");
-        input = scanner.nextLine();
+        String input = scanner.nextLine();
         String course_name = input;
 
         System.out.print("Enter a semester  followed by year (FALL, SPRING, SUMMER 2022): ");
@@ -158,8 +156,8 @@ public class UserServiceImpl implements UserService {
             }
         } while (!isValid);
 
-        Course course = new Course (course_id, course_name, semester, capacity, isAvailable);
-        System.out.println("Adding new course " + course_id + "...");
+        Course course = new Course (course_name, semester, capacity, isAvailable);
+        System.out.println("Adding new course " + course_name + "...");
         courseDAO.create(course);
     }
 
@@ -181,10 +179,17 @@ public class UserServiceImpl implements UserService {
         System.out.print("Enter a capacity: ");
         input = scanner.nextLine();
         int capacity = Integer.parseInt(input);
+
+        System.out.print("Is course available?: ");
+        input = scanner.nextLine();
+        boolean availability = true;
+
         Course course = courseDAO.findById(course_id);
+
         course.setCourseName(course_name);
         course.setSemester(semester);
         course.setCapacity(capacity);
+        course.setIsAvailable(availability);
         courseDAO.update(course);
     }
 
@@ -293,9 +298,11 @@ public class UserServiceImpl implements UserService {
         }
         catch (UserAlreadyExistsException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         catch (Exception e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         return null;
     }

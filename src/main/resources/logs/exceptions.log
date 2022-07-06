@@ -1,0 +1,5 @@
+-------------2022-45-06 04:45:21-----------
+com.revature.courseapp.services.UserServiceImpl.registerStudent(UserServiceImpl.java:294)
+com.revature.courseapp.CourseAppDriver.loginMenu(CourseAppDriver.java:151)
+com.revature.courseapp.CourseAppDriver.main(CourseAppDriver.java:104)
+-------------------------
