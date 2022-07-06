@@ -6,6 +6,7 @@ import com.revature.courseapp.models.Course;
 import com.revature.courseapp.models.Student;
 import com.revature.courseapp.utils.LinkedList;
 import com.revature.courseapp.utils.List;
+import com.revature.courseapp.utils.Logger;
 
 /** This class handles PostgresSQL queries for the table courses and courses_users.
  *  
@@ -28,24 +29,24 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
      */
     @Override
     public Course create(Course course) {
-        // Check if user is already in the database
+        // Check if course is already in the database
         if (doesCourseExist(course.getId())) {
             System.out.println("Course already exists!");
             return null;
         }
 
         String query = "INSERT INTO courses" +
-        "  (course_id, course_name, semester, capacity, size) VALUES " +
+        "  (course_name, semester, capacity, is_available, size) VALUES " +
         " (?, ?, ?, ?, ?);";
 
         PreparedStatement preparedStatement = null;
         try (Connection conn = connUtil.openConnection()) {
             // Prepare the preparedStatement for execution by filling user object fields
             preparedStatement = conn.prepareStatement(query);
-            preparedStatement.setInt(1, course.getId());
-            preparedStatement.setString(2, course.getCourseName());
-            preparedStatement.setString(3, course.getSemester());
-            preparedStatement.setInt(4, course.getCapacity());
+            preparedStatement.setString(1, course.getCourseName());
+            preparedStatement.setString(2, course.getSemester());
+            preparedStatement.setInt(3, course.getCapacity());
+            preparedStatement.setBoolean(4, course.getIsAvailable());
             preparedStatement.setInt(5, course.getNumberOfStudents());
 
             // Execute preparedStatement
@@ -59,9 +60,11 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         catch (SQLException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         catch (Exception e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -95,6 +98,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         catch (SQLException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -131,6 +135,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         catch (SQLException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -156,10 +161,11 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         catch (SQLException e) {
             e.printStackTrace();
-
+            Logger.logMessage(e.getStackTrace());
         }
         catch (Exception e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -185,14 +191,51 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         catch (SQLException e) {
             e.printStackTrace();
-
+            Logger.logMessage(e.getStackTrace());
         }
         catch (Exception e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
         }
+    }
+
+    /**
+     * Retrieve all courses.
+     * @return
+     */
+    @Override
+    public List<Course> findAll() {
+        List<Course> courses = new LinkedList<>();
+        String query = String.format ("SELECT * FROM courses order by course_id");
+
+        Statement statement = null;
+        ResultSet result = null;
+        try (Connection conn = connUtil.openConnection()) {
+            statement = conn.createStatement();
+            result = statement.executeQuery (query);
+            while (result.next()) {
+                int course_id = result.getInt ("course_id");
+                String course_name = result.getString("course_name");
+                String semester = result.getString("semester");
+                int capacity = result.getInt("capacity");
+                boolean is_available = result.getBoolean("is_available");
+                List<Student> students = getAllEnrolledStudents (course_id);
+
+                courses.add(new Course(course_id, course_name, semester, capacity, is_available, students));
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
+        }
+        finally {
+            closeQuietly(statement);
+            closeQuietly(result);
+        }
+        return courses;
     }
 
     /**
@@ -201,9 +244,9 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
      * @return
      */
     @Override
-    public List<Course> findAll() {
+    public List<Course> findAllAvailable() {
         List<Course> availableCourses = new LinkedList<>();
-        String query = String.format ("SELECT * FROM courses order by course_id");
+        String query = String.format ("SELECT * FROM courses where is_available=true order by course_id");
 
         Statement statement = null;
         ResultSet result = null;
@@ -223,6 +266,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         catch (SQLException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(statement);
@@ -254,7 +298,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         catch (SQLException e) {
             e.printStackTrace();
-
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(resultSet);
@@ -268,7 +312,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
      */
     public List<Course> getAllEnrolledCourses (int student_id) {
         List<Course> enrolledCourses = new LinkedList<>();
-        String query = "SELECT courses.course_id, course_name, semester, capacity, size FROM courses, courses_users WHERE courses.course_id = courses_users.course_id and courses_users.user_id = ?;";
+        String query = "SELECT courses.course_id, course_name, semester, capacity, is_available, size FROM courses, courses_users WHERE courses.course_id = courses_users.course_id and courses_users.user_id = ?;";
 
         PreparedStatement preparedStatement = null;
         ResultSet result = null;
@@ -290,6 +334,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         catch (SQLException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -304,7 +349,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
      */
     public List<Student> getAllEnrolledStudents (int course_id) {
         List<Student> enrolledStudents = new LinkedList<>();
-        String query = "SELECT u.user_id, u.first_name, u.last_name, u.username, u.email, u.usertype, s.major, s.gpa FROM users u, courses_users cu, students s WHERE cu.course_id = 101 and cu.user_id = u.user_id;";
+        String query = "SELECT distinct u.user_id, u.first_name, u.last_name, u.username, u.email, u.usertype, s.major, s.gpa FROM users u, courses_users cu, students s WHERE cu.course_id = ? and cu.user_id = u.user_id;";
 
         PreparedStatement preparedStatement = null;
         ResultSet result = null;
@@ -329,6 +374,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         catch (SQLException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -360,16 +406,21 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
             }
             preparedStatement.close();
             
-            // Is course full?
-            query = "SELECT size, capacity from courses where course_id=?";
+            // Is course full or available?
+            query = "SELECT size, capacity, is_available from courses where course_id=?";
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setInt(1, course_id);
             result = preparedStatement.executeQuery();
             if (result.next()) {
                 int size = result.getInt("size");
                 int capacity = result.getInt("capacity");
+                boolean isAvailable = result.getBoolean("is_available");
                 if (size >= capacity) {
                     System.out.println("COURSE IS FULL!");
+                    return;
+                }
+                if (!isAvailable) {
+                    System.out.println("COURSE IS NOT AVAILABLE!");
                     return;
                 }
             }
@@ -397,6 +448,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         catch (SQLException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -443,13 +495,46 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         catch (SQLException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         catch (Exception e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
         }
         return false;
+    }
+
+    @Override
+    public int getSize (int course_id) {
+        PreparedStatement preparedStatement = null;
+        try (Connection conn = connUtil.openConnection()) {
+            // Verify that the enrollment exists
+            String query = "SELECT size FROM courses WHERE course_id = ?;";
+            preparedStatement = conn.prepareStatement(query);
+            preparedStatement.setInt(1, course_id);
+            ResultSet result = preparedStatement.executeQuery();
+            if (result.next()) {
+                return result.getInt("size");
+            }
+            else {
+                System.out.println("COULD NOT FIND COURSE!");
+                return 0;
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
+        }
+        finally {
+            closeQuietly(preparedStatement);
+        }
+        return 0;
     }
 }

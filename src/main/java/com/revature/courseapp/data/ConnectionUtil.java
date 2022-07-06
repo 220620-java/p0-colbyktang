@@ -9,6 +9,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import com.revature.courseapp.utils.Logger;
+
 /**
  * A class that establishes a connection with a remote database.
  * When accessing a database, a JSON object in the src/resources is read for the endpoint,
@@ -108,6 +110,7 @@ public class ConnectionUtil {
             }
             catch (SQLException ex) {
                 ex.printStackTrace();
+                Logger.logMessage(ex.getStackTrace());
             }
         }
         return null;
@@ -154,6 +157,7 @@ public class ConnectionUtil {
         }
         catch (JSONException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         return credentials;
     }
