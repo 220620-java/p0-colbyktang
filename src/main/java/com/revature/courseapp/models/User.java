@@ -66,7 +66,6 @@ public abstract class User {
     public String getEmail () {
         return email;
     }
-
     
     /** 
      * @return UserType
@@ -79,7 +78,6 @@ public abstract class User {
     public static void resetNextID () {
         nextId = 100;
     }
-
     
     /** 
      * @return int

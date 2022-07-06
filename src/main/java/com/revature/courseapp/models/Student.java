@@ -25,27 +25,49 @@ package com.revature.courseapp.models;
 * @version 1.0
 */
 public class Student extends User {
+    private String major;
+    private float gpa;
+
+    public String getMajor() {
+        return major;
+    }
+
+    public void setMajor (String major) {
+        this.major = major;
+    }
+
+    public float getGpa () {
+        return gpa;
+    }
+
+    public void setGpa (float gpa) {
+        this.gpa = gpa;
+    }
 
     // Constructor with an auto incrementing id
-    public Student (String first, String last, String username, String email) {
+    public Student (String first, String last, String username, String email, String major, float gpa) {
         super(first, last, username, email);
         userType = UserType.STUDENT;
+        this.major = major;
+        this.gpa = gpa;
     }
     // Constructor with a defined id
-    public Student (int id, String first, String last, String username, String email) {
+    public Student (int id, String first, String last, String username, String email, String major, float gpa) {
         super(id, first, last, username, email);
         userType = UserType.STUDENT;
+        this.major = major;
+        this.gpa = gpa;
     }
     
     /**
      * A String template for printing out the fields of a Student
      */
-    private static final String ToStringTemplate = "StudentID: %1s, First Name: %2s, Last Name: %3s, Username: %4s, Email: %5s";
+    private static final String ToStringTemplate = "StudentID: %1s, First Name: %2s, Last Name: %3s, Username: %4s, Email: %5s, Major: %6s, GPA: %7f";
 
     /** 
      * @return String
      */
     public String toString () {
-        return String.format (ToStringTemplate, this.id, this.firstName, this.lastName, this.username, this.email);
+        return String.format (ToStringTemplate, this.id, this.firstName, this.lastName, this.username, this.email, this.major, this.gpa);
     }
 }

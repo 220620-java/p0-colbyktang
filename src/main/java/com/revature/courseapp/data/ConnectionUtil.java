@@ -18,16 +18,19 @@ import org.json.JSONTokener;
  */
 public class ConnectionUtil {
     protected Properties props;
+    protected static String credentialsFilename = "db.json";
 
     // Singleton design pattern
     private static ConnectionUtil connUtil;
 
     protected ConnectionUtil () {
         this ("db.json");
+        credentialsFilename = "db.json";
     }
 
     private ConnectionUtil (String jsonFilename) {
         openConnection (jsonFilename);
+        credentialsFilename = jsonFilename;
     }
 
     /**
@@ -50,6 +53,7 @@ public class ConnectionUtil {
         if (connUtil == null) {
             connUtil = new ConnectionUtil(jsonFilename);
         }
+        credentialsFilename = jsonFilename;
         return connUtil;
     }
 
@@ -59,7 +63,7 @@ public class ConnectionUtil {
      * @return
      */
     public Connection openConnection () {
-        return openConnection("db.json");
+        return openConnection(credentialsFilename);
     }
 
     /**

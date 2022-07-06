@@ -24,7 +24,7 @@ public class DatabaseCoursesTest {
 
     @Test
     void testGetCourse() {
-        Course course = new Course (101, "Introduction to Computer Science", "FALL 2022", 30);
+        Course course = new Course (101, "Introduction to Computer Science", "FALL 2022", 30, true);
         assertEquals(course, courseDAO.findById(101));
     }
 
@@ -35,9 +35,9 @@ public class DatabaseCoursesTest {
 
     @Test
     void testDoesCourseExist() {
-        Course course = new Course (101, "Introduction to Computer Science", "FALL 2022", 30);
-        Course course2 = new Course (301, "Introduction to Electricity", "FALL 2022", 30);
-        Course course3 = new Course (201, "Introduction to Technology", "FALL 2022", 30);
+        Course course = new Course (101, "Introduction to Computer Science", "FALL 2022", 30, true);
+        Course course2 = new Course (301, "Introduction to Electricity", "FALL 2022", 30, true);
+        Course course3 = new Course (201, "Introduction to Technology", "FALL 2022", 30, true);
         assertTrue(courseDAO.doesCourseExist(course.getId()));
         assertTrue(courseDAO.doesCourseExist(course2.getId()));
         assertTrue(courseDAO.doesCourseExist(course3.getId()));
@@ -65,7 +65,7 @@ public class DatabaseCoursesTest {
 
     @Test
     void testInsertCourse() {
-        Course course = new Course (101, "TEST COURSE", "SPRING 2023", 5);
+        Course course = new Course (101, "TEST COURSE", "SPRING 2023", 5, true);
         // insertCourse (course);
     }
 

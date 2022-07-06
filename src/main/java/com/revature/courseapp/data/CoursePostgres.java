@@ -15,6 +15,14 @@ import com.revature.courseapp.utils.List;
 public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
     private ConnectionUtil connUtil = ConnectionUtil.getConnectionUtil();
 
+    public CoursePostgres () {
+        connUtil = ConnectionUtil.getConnectionUtil();
+    }
+
+    public CoursePostgres (String jsonFilename) {
+        connUtil = ConnectionUtil.getConnectionUtil(jsonFilename);
+    }
+
     /** Inserts a course into the database if it doesn't already exist.
      * @param course
      */
@@ -78,10 +86,11 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
                 String course_name = result.getString("course_name");
                 String semester = result.getString("semester");
                 int capacity = result.getInt("capacity");
+                boolean is_available = result.getBoolean("is_available");
 
                 List<Student> students = getAllEnrolledStudents (course_id);
 
-                return new Course(course_id, course_name, semester, capacity, students);
+                return new Course(course_id, course_name, semester, capacity, is_available, students);
             }
         }
         catch (SQLException e) {
@@ -206,9 +215,10 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
                 String course_name = result.getString("course_name");
                 String semester = result.getString("semester");
                 int capacity = result.getInt("capacity");
+                boolean is_available = result.getBoolean("is_available");
                 List<Student> students = getAllEnrolledStudents (course_id);
 
-                availableCourses.add(new Course(course_id, course_name, semester, capacity, students));
+                availableCourses.add(new Course(course_id, course_name, semester, capacity, is_available, students));
             }
         }
         catch (SQLException e) {
@@ -272,9 +282,10 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
                 String course_name = result.getString("course_name");
                 String semester = result.getString("semester");
                 int capacity = result.getInt("capacity");
+                boolean is_available = result.getBoolean("is_available");
                 List<Student> students = getAllEnrolledStudents (course_id);
 
-                enrolledCourses.add(new Course(course_id, course_name, semester, capacity, students));
+                enrolledCourses.add(new Course(course_id, course_name, semester, capacity, is_available, students));
             }
         }
         catch (SQLException e) {
@@ -293,7 +304,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
      */
     public List<Student> getAllEnrolledStudents (int course_id) {
         List<Student> enrolledStudents = new LinkedList<>();
-        String query = "SELECT u.user_id, u.first_name, u.last_name, u.username, u.email, u.usertype FROM users u, courses_users cu WHERE cu.course_id = 101 and cu.user_id = u.user_id;";
+        String query = "SELECT u.user_id, u.first_name, u.last_name, u.username, u.email, u.usertype, s.major, s.gpa FROM users u, courses_users cu, students s WHERE cu.course_id = 101 and cu.user_id = u.user_id;";
 
         PreparedStatement preparedStatement = null;
         ResultSet result = null;
@@ -308,9 +319,11 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
                 String username = result.getString("username");
                 String email = result.getString("email");
                 String usertype = result.getString ("usertype");
+                String major = result.getString ("usertype");
+                float gpa = result.getFloat ("gpa");
 
                 if (usertype == "STUDENT") {
-                    enrolledStudents.add(new Student(id, firstName, lastName, username, email));
+                    enrolledStudents.add(new Student(id, firstName, lastName, username, email, major, gpa));
                 }
             }
         }

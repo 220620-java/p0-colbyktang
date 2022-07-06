@@ -4,7 +4,8 @@ package com.revature.courseapp.utils;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
-public class UtilsTest {
+
+public class LinkedListTest {
     @Test
     public void ListInstantiation () {
         LinkedList<Integer> testList = new LinkedList<Integer>(new Integer[]{1,2,3});

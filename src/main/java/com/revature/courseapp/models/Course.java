@@ -13,6 +13,7 @@ public class Course {
     protected String courseName;
     protected String semester;
     protected int capacity;
+    protected boolean isAvailable;
     protected List<Student> enrolledStudents = new LinkedList<Student>();
     
     /** 
@@ -73,17 +74,35 @@ public class Course {
     }
 
     /**
+     * Gets the course availability
+     * @return Is the course available?
+     */
+    public boolean getIsAvailable () {
+        return isAvailable;
+    }
+
+    /**
+     * Sets the course availability.
+     * @param isAvailable Is the course available?
+     */
+    public void setIsAvailable (boolean isAvailable) {
+        this.isAvailable = isAvailable;
+    }
+
+    /**
      * Constructor for initializing a course with NO students
      * @param id
      * @param name
      * @param semester
      * @param capacity
+     * @param isAvailable
      */
-    public Course (int id, String name, String semester, int capacity) {
+    public Course (int id, String name, String semester, int capacity, boolean isAvailable) {
         this.courseId = id;
         this.courseName = name;
         this.semester = semester;
         this.capacity = capacity;
+        this.isAvailable = isAvailable;
     }
 
     /**
@@ -92,13 +111,15 @@ public class Course {
      * @param name
      * @param semester
      * @param capacity
+     * @param isAvailable
      * @param students
      */
-    public Course (int id, String name, String semester, int capacity, List<Student> students) {
+    public Course (int id, String name, String semester, int capacity, boolean isAvailable, List<Student> students) {
         this.courseId = id;
         this.courseName = name;
         this.semester = semester;
         this.capacity = capacity;
+        this.isAvailable = isAvailable;
         this.enrolledStudents = students;
     }
 
@@ -163,14 +184,14 @@ public class Course {
     /**
      * A string template for toString.
      */
-    private static final String ToStringTemplate = "CourseID: %d, Course Name: %s, Semester: %s, Capacity: %d, EnrolledStudents: %s";
+    private static final String ToStringTemplate = "CourseID: %d, Course Name: %s, Semester: %s, Capacity: %d, Is Available: %s, EnrolledStudents: %s";
 
     
     /** 
      * @return String
      */
     public String toString () {
-        return String.format (ToStringTemplate, this.getId(), this.getCourseName(), this.getSemester(), this.getCapacity(), this.getEnrolledStudents());
+        return String.format (ToStringTemplate, this.getId(), this.getCourseName(), this.getSemester(), this.getCapacity(), String.valueOf(this.getIsAvailable()), this.getEnrolledStudents());
     }
 
     
