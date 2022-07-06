@@ -42,8 +42,10 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void studentViewAvailableClasses () {
+        System.out.println();
         System.out.println("Viewing Available Classes...");
         List<Course> courses = courseDAO.findAllAvailable();
+        System.out.println();
         if (courses.size() == 0) {
             System.out.println("NO AVAILABLE CLASSES!");
             return;
@@ -54,7 +56,7 @@ public class UserServiceImpl implements UserService {
                 "%d: %s [%d/%d]", 
                 course.getId(), 
                 course.getCourseName(), 
-                course.getNumberOfStudents(), 
+                courseDAO.getSize(course.getId()), 
                 course.getCapacity()
                 );
             System.out.println(printString);
@@ -79,8 +81,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void studentViewRegisteredClasses () {
+        System.out.println();
         System.out.println("Viewing Registered Classes...");
+        System.out.println();
         List<Course> courses = courseDAO.getAllEnrolledCourses(CourseAppDriver.getLoggedUser().getId());
+        System.out.println();
         if (courses.size() == 0) {
             System.out.println("NO REGISTERED CLASSES!");
             return;
@@ -92,7 +97,7 @@ public class UserServiceImpl implements UserService {
                 "%d: %s [%d/%d]", 
                 course.getId(), 
                 course.getCourseName(), 
-                course.getNumberOfStudents(), 
+                courseDAO.getSize(course.getId()), 
                 course.getCapacity()
                 );
             System.out.println(printString);
@@ -121,9 +126,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void facultyViewClasses() {
         List<Course> allCourses = courseDAO.findAll();
+        System.out.println();
         System.out.println("Displaying all classes...");
         for (int i = 0; i < allCourses.size(); i++) {
-
             System.out.println(allCourses.get(i));
         }
     }
@@ -132,18 +137,46 @@ public class UserServiceImpl implements UserService {
     public void facultyAddNewClass () {
         Scanner scanner = CourseAppDriver.getScanner();
         System.out.println("Adding new class...");
+        String input;
 
-        System.out.print("Enter a course name: ");
-        String input = scanner.nextLine();
-        String course_name = input;
+        boolean isCourseNameValid = false;
+        String course_name = "";
+        do {
+            System.out.print("Enter a course name: ");
+            input = scanner.nextLine();
+            course_name = input;
+            isCourseNameValid = Validation.isCourseNameValid(course_name);
 
-        System.out.print("Enter a semester  followed by year (FALL, SPRING, SUMMER 2022): ");
-        input = scanner.nextLine();
-        String semester = input;
+            if (!isCourseNameValid) {
+                System.out.println("Enter a valid course name!");
+            }
+        } while (!isCourseNameValid);
 
-        System.out.print("Enter a capacity: ");
-        input = scanner.nextLine();
-        int capacity = Integer.parseInt(input);
+        boolean isSemesterValid = false;
+        String semester = "";
+        do {
+            System.out.print("Enter a semester  followed by year (FALL, SPRING, SUMMER 2022): ");
+            input = scanner.nextLine();
+            semester = input;
+            isSemesterValid = Validation.isSemesterValid(semester);
+            if (!isSemesterValid) {
+                System.out.println("Semester is not valid! Choose a season followed by year!");
+            }
+        } while (!isSemesterValid);
+
+        boolean isCapacityValid = false;
+        int capacity = 0;
+        do {
+            System.out.print("Enter a capacity: ");
+            input = scanner.nextLine();
+            isCapacityValid = Validation.isCapacityValid(input);
+            if (!isCapacityValid) {
+                System.out.println("Capacity is not VALID!");
+            }
+            else {
+                capacity = Integer.parseInt(input);
+            }
+        } while (!isCapacityValid);
 
         boolean isValid = false;
         boolean isAvailable = false;
@@ -153,7 +186,7 @@ public class UserServiceImpl implements UserService {
             isValid = Validation.isAvailableValid(input);
             if (!isValid) { System.out.println("Input not valid!");}
             else { 
-                if (input.toUpperCase() == "Y") isAvailable = true;
+                if (input.toUpperCase().equals("Y")) isAvailable = true;
                 else { isAvailable = false;}
             }
         } while (!isValid);
@@ -166,32 +199,77 @@ public class UserServiceImpl implements UserService {
     @Override
     public void facultyChangeClassDetails () {
         Scanner scanner = CourseAppDriver.getScanner();
-        System.out.print("Select a class to change (course id): ");
-        String input = scanner.nextLine();
-        int course_id = Integer.parseInt(input);
-
-        System.out.print("Enter a course name: ");
-        input = scanner.nextLine();
-        String course_name = input;
-
-        System.out.print("Enter a semester  followed by year (FALL, SPRING, SUMMER 2022): ");
-        input = scanner.nextLine();
-        String semester = input;
-
-        System.out.print("Enter a capacity: ");
-        input = scanner.nextLine();
-        int capacity = Integer.parseInt(input);
-
-        System.out.print("Is course available?: ");
-        input = scanner.nextLine();
-        boolean availability = true;
+        
+        boolean isIdValid = false;
+        int course_id = 0;
+        do {
+            System.out.print("Select a class to change (course id): ");
+            String input = scanner.nextLine();
+            isIdValid = Validation.isIdValid(input);
+            course_id = Integer.parseInt(input);
+            if (!isIdValid) {
+                System.out.println("ID IS NOT VALID! (Integer)");
+            }
+        } while (!isIdValid);
 
         Course course = courseDAO.findById(course_id);
 
-        course.setCourseName(course_name);
-        course.setSemester(semester);
-        course.setCapacity(capacity);
-        course.setIsAvailable(availability);
+        boolean isCourseNameValid = false;
+        String course_name = "";
+        do {
+            System.out.print("Enter a course name: ");
+            String input = scanner.nextLine();
+            course_name = input;
+            isCourseNameValid = Validation.isCourseNameValid(course_name);
+
+            if (!isCourseNameValid) {
+                System.out.println("Enter a valid course name!");
+            }
+            else {
+                course.setCourseName(course_name);
+            }
+        } while (!isCourseNameValid);
+
+
+        boolean isSemesterValid = false;
+        String semester = "";
+        do {
+            System.out.print("Enter a semester  followed by year (FALL, SPRING, SUMMER 2022): ");
+            String input = scanner.nextLine();
+            semester = input;
+            isSemesterValid = Validation.isSemesterValid(semester);
+            if (!isSemesterValid) {
+                System.out.println("Semester is not valid! Choose a season followed by year!");
+            }
+            else {
+                course.setSemester(semester);
+            }
+        } while (!isSemesterValid);
+
+        boolean isCapacityValid = false;
+        int capacity = 0;
+        do {
+            System.out.print("Enter a capacity: ");
+            String input = scanner.nextLine();
+            if (!isCapacityValid) {
+                System.out.println("Capacity is not VALID!");
+            }
+            else {
+                capacity = Integer.parseInt(input);
+                course.setCapacity(capacity);
+            }
+        } while (!isCapacityValid);
+
+        boolean isAvailableValid = false;
+        boolean availability = false;
+        do {
+            System.out.print("Is course available? (Y/N): ");
+            String input = scanner.nextLine();
+            isAvailableValid = Validation.isAvailableValid(input);
+            if (input.toUpperCase().equals("Y")) {availability = true;}
+            course.setIsAvailable(availability);
+        } while (!isAvailableValid);
+
         courseDAO.update(course);
     }
 
@@ -218,17 +296,26 @@ public class UserServiceImpl implements UserService {
         );
 
         String firstName = "";
+        boolean isFirstNameValid = false;
         do {
-            
             System.out.print ("Enter your first name: ");
             firstName = scanner.nextLine();
-        } while (firstName == "");
+            isFirstNameValid = Validation.isNameValid(firstName);
+            if (!isFirstNameValid) {
+                System.out.println("First name is not valid!");
+            }
+        } while (!isFirstNameValid);
 
         String lastName = "";
+        boolean isLastNameValid = false;
         do {
             System.out.print ("Enter your last name: ");
             lastName = scanner.nextLine();
-        } while (lastName == "");
+            isLastNameValid = Validation.isNameValid(lastName);
+            if (!isLastNameValid) {
+                System.out.println("Last name is not valid!");
+            }
+        } while (!isLastNameValid);
         
         String username = "";
         boolean isUsernameValid = false;
@@ -324,8 +411,54 @@ public class UserServiceImpl implements UserService {
     }
 
     public Student studentChangeProfile (Student student) {
-        Student newStudent = student;
-        
+        Scanner scanner = CourseAppDriver.getScanner();
+
+        String firstName = "";
+        boolean isFirstNameValid = false;
+        do {
+            System.out.print ("Enter your first name: ");
+            firstName = scanner.nextLine();
+            isFirstNameValid = Validation.isNameValid(firstName);
+            if (!isFirstNameValid) {
+                System.out.println("First name is not valid!");
+            }
+        } while (!isFirstNameValid);
+
+        String lastName = "";
+        boolean isLastNameValid = false;
+        do {
+            System.out.print ("Enter your last name: ");
+            lastName = scanner.nextLine();
+            isLastNameValid = Validation.isNameValid(lastName);
+            if (!isLastNameValid) {
+                System.out.println("Last name is not valid!");
+            }
+        } while (!isLastNameValid);
+
+        String email = "";
+        boolean isEmailValid = false;
+        do {
+            System.out.print ("Enter your email: ");
+            email = scanner.nextLine();
+            isEmailValid = Validation.isEmailValid(email);
+            if (!isEmailValid) {
+                System.out.println("Email is not in valid form: xxx@xxx.com");
+            }
+        } while (!isEmailValid);
+
+        String major = "";
+        boolean isMajorValid = false;
+        do {
+            System.out.print ("Enter your major: ");
+            major = scanner.nextLine();
+            isMajorValid = Validation.isMajorValid(major);
+            if (!isMajorValid) {
+                System.out.println("Major is not long enough or does not start with a letter!");
+            }
+        } while (!isMajorValid);
+
+        Student newStudent = new Student (student.getId(), firstName, lastName, student.getUsername(), email, major, student.getGpa());
+
         return newStudent;
     }
 }

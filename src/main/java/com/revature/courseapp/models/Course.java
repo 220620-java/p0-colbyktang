@@ -14,7 +14,7 @@ public class Course {
     protected String semester;
     protected int capacity;
     protected boolean isAvailable;
-    protected List<Student> enrolledStudents = new LinkedList<Student>();
+    protected List<Student> enrolledStudents;
     
     /** 
      * Course ID is manually set during instantiation.
@@ -91,7 +91,6 @@ public class Course {
 
     /**
      * Constructor for initializing a course with NO students or ID
-     * @param id
      * @param name
      * @param semester
      * @param capacity
@@ -102,6 +101,7 @@ public class Course {
         this.semester = semester;
         this.capacity = capacity;
         this.isAvailable = isAvailable;
+        this.enrolledStudents = new LinkedList<Student>();
     }
 
     /**
@@ -118,6 +118,7 @@ public class Course {
         this.semester = semester;
         this.capacity = capacity;
         this.isAvailable = isAvailable;
+        this.enrolledStudents = new LinkedList<Student>();
     }
 
     /**

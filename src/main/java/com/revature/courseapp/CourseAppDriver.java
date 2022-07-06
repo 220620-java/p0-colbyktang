@@ -271,7 +271,7 @@ public class CourseAppDriver {
                     break;
                 case "3":
                     System.out.println("Returning to Student Menu...");
-                    break;
+                    return "0";
             }
             printDividerLine();
         }

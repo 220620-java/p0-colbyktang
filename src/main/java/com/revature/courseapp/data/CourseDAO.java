@@ -55,4 +55,11 @@ public interface CourseDAO extends DataAccessObject<Course>{
      * @return
      */
     public List<Course> findAllAvailable();
+
+    /**
+     * Get the size of a course.
+     * @param course_id
+     * @return
+     */
+    public int getSize (int course_id);
 }
