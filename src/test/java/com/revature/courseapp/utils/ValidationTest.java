@@ -80,4 +80,16 @@ public class ValidationTest {
         assertFalse (Validation.isEmailValid("c"));
         assertFalse (Validation.isEmailValid(""));
     }
+
+    @Test
+    public void isCapacityValid () {
+        assertTrue (Validation.isCapacityValid("4"));
+        assertTrue (Validation.isCapacityValid("8"));
+    }
+
+    @Test
+    public void isCapacityInvalid () {
+        assertFalse (Validation.isCapacityValid("-2"));
+        assertFalse (Validation.isCapacityValid("ttt"));
+    }
 }

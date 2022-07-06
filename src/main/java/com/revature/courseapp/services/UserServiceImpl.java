@@ -213,6 +213,10 @@ public class UserServiceImpl implements UserService {
         } while (!isIdValid);
 
         Course course = courseDAO.findById(course_id);
+        if (course == null) {
+            System.out.println("CANNOT FIND COURSE " + course_id + "!");
+            return;
+        }
 
         boolean isCourseNameValid = false;
         String course_name = "";
@@ -251,6 +255,7 @@ public class UserServiceImpl implements UserService {
         do {
             System.out.print("Enter a capacity: ");
             String input = scanner.nextLine();
+            isCapacityValid = Validation.isCapacityValid(input);
             if (!isCapacityValid) {
                 System.out.println("Capacity is not VALID!");
             }
