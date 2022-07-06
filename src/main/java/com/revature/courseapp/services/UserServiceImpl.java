@@ -73,6 +73,7 @@ public class UserServiceImpl implements UserService {
         }
         catch (NumberFormatException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
     }
 
@@ -113,6 +114,7 @@ public class UserServiceImpl implements UserService {
         }
         catch (NumberFormatException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
     }
 

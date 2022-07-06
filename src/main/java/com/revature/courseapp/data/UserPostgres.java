@@ -8,6 +8,7 @@ import com.revature.courseapp.models.User;
 import com.revature.courseapp.utils.Encryption;
 import com.revature.courseapp.utils.LinkedList;
 import com.revature.courseapp.utils.List;
+import com.revature.courseapp.utils.Logger;
 
 /** This class handles PostgresSQL queries for the table users.
  *  
@@ -60,9 +61,11 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         }
         catch (SQLException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         catch (Exception e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -112,9 +115,11 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         }
         catch (SQLException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         catch (Exception e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -174,9 +179,11 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         }
         catch (SQLException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         catch (Exception e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -235,9 +242,11 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         }
         catch (SQLException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         catch (Exception e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -304,10 +313,11 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         }
         catch (SQLException e) {
             e.printStackTrace();
-
+            Logger.logMessage(e.getStackTrace());
         }
         catch (Exception e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -377,10 +387,11 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         }
         catch (SQLException e) {
             e.printStackTrace();
-
+            Logger.logMessage(e.getStackTrace());
         }
         catch (Exception e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -446,6 +457,7 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         }
         catch (SQLException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly (statement);
@@ -487,6 +499,7 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         }
         catch (SQLException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -512,10 +525,11 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         }
         catch (SQLException e) {
             e.printStackTrace();
-
+            Logger.logMessage(e.getStackTrace());
         }
         catch (Exception e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly (preparedStatement);
@@ -543,7 +557,7 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         }
         catch (SQLException e) {
             e.printStackTrace();
-
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -571,7 +585,7 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         }
         catch (SQLException e) {
             e.printStackTrace();
-
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -599,7 +613,7 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         }
         catch (SQLException e) {
             e.printStackTrace();
-
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -634,10 +648,11 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         }
         catch (SQLException e) {
             e.printStackTrace();
-
+            Logger.logMessage(e.getStackTrace());
         }
         catch (Exception e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(statement);

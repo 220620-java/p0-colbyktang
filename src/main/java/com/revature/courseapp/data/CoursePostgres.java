@@ -61,11 +61,11 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         catch (SQLException e) {
             e.printStackTrace();
-            Logger.logMessage(e.getMessage());
+            Logger.logMessage(e.getStackTrace());
         }
         catch (Exception e) {
             e.printStackTrace();
-            Logger.logMessage(e.getMessage());
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -99,7 +99,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         catch (SQLException e) {
             e.printStackTrace();
-            Logger.logMessage(e.getMessage());
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -136,7 +136,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         catch (SQLException e) {
             e.printStackTrace();
-            Logger.logMessage(e.getMessage());
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -162,10 +162,11 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         catch (SQLException e) {
             e.printStackTrace();
-
+            Logger.logMessage(e.getStackTrace());
         }
         catch (Exception e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -191,10 +192,11 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         catch (SQLException e) {
             e.printStackTrace();
-
+            Logger.logMessage(e.getStackTrace());
         }
         catch (Exception e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -228,6 +230,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         catch (SQLException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(statement);
@@ -264,6 +267,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         catch (SQLException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(statement);
@@ -295,7 +299,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         catch (SQLException e) {
             e.printStackTrace();
-
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(resultSet);
@@ -331,6 +335,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         catch (SQLException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -370,6 +375,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         catch (SQLException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -443,6 +449,7 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         catch (SQLException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
@@ -489,9 +496,11 @@ public class CoursePostgres extends DatabaseUtils implements CourseDAO  {
         }
         catch (SQLException e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         catch (Exception e) {
             e.printStackTrace();
+            Logger.logMessage(e.getStackTrace());
         }
         finally {
             closeQuietly(preparedStatement);
