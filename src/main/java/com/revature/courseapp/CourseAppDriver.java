@@ -22,27 +22,26 @@ import com.revature.courseapp.services.UserServiceImpl;
  * Referential integrity (e.g. if a class is removed from the catalog, no students should be registered for it)
  * Logging messages and exceptions to a file using a custom logger
  * Generation of basic design documents (e.g. relational diagram, class diagram, flows, etc.)
- */
-
-/*
- *  As any kind of user, I can:
+ *  
+ * As any kind of user, I can:
     - login with my existing credentials
 
-    As a faculty member I can:
-    - add new classes to the registration catalog
-    - change the registration details for a class
-    - remove a class from the registration catalog (this should unregister all registered students)
-    
     As a student, I can:
     - register a new account with the system (must be secured with a password)
     - view classes available for registration
     - register for an open and available class
     - cancel my registration for a class (if within window)
     - view the classes that I have registered for
+
+    As a faculty member I can:
+    - add new classes to the registration catalog
+    - change the registration details for a class
+    - remove a class from the registration catalog (this should unregister all registered students)
  */
 
-/** CourseApp Console Application is an application that lets students view, enroll, and withdraw from courses
- *  as well as letting faculty manage courses. This application encrypts passwords in SHA-512.
+/** CourseApp Console Application is an application that lets students view, enroll, 
+ * and withdraw from courses as well as letting faculty manage courses. 
+ * This application encrypts passwords in SHA-512.
  * @author Colby Tang
  * @version 1.0
  */
