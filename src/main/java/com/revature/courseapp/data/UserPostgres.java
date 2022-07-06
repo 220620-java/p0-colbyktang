@@ -15,7 +15,15 @@ import com.revature.courseapp.utils.List;
  * @version 1.0
  */
 public class UserPostgres extends DatabaseUtils implements UserDAO {
-    private ConnectionUtil connUtil = ConnectionUtil.getConnectionUtil();
+    private ConnectionUtil connUtil;
+
+    public UserPostgres () {
+        connUtil = ConnectionUtil.getConnectionUtil();
+    }
+
+    public UserPostgres (String jsonFilename) {
+        connUtil = ConnectionUtil.getConnectionUtil(jsonFilename);
+    }
 
     /** Inserts a user into the table users.
      *  @param user The object to be added to the data source
@@ -26,7 +34,7 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
     @Override
     public User create(User user) {
         // Check if user is already in the database
-        if (doesUserExist(user.getId(), user.getUsername())) {
+        if (doesUserExist(user.getUsername())) {
             System.out.println("User already exists!");
             return null;
         }
@@ -65,20 +73,25 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
     /** Inserts a user into the table users with password and salt.
      *  @param user The object to be added to the data source
      *  @param pass
-     *  @param byte[]
+     *  @param salt
      *  @return The object that was added or null if the object was unable to be added
      */
     @Override
-    public User create(User user, String pass, byte[] salt) {
+    public User create(User user, String pass) {
         // Check if user is already in the database
-        if (doesUserExist(user.getId(), user.getUsername())) {
+        if (doesUserExist(user.getUsername())) {
             System.out.println("User already exists!");
             return null;
         }
 
+        byte[] salt = Encryption.generateSalt();
+        pass = Encryption.generateEncryptedPassword(pass, salt);
+
+        // Inserts into the user table.
         String query = "INSERT INTO users" +
         "  (user_id, first_name, last_name, username, email, usertype, password, salt) VALUES " +
         " (?, ?, ?, ?, ?, ?, ?, ?);";
+
         PreparedStatement preparedStatement = null;
         try (Connection conn = connUtil.openConnection()) {
 
@@ -95,6 +108,130 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
 
             // Execute statement
             preparedStatement.executeUpdate();
+            return user;
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            closeQuietly(preparedStatement);
+        }
+        return null;
+    }
+
+    /** Inserts a Student into the table users with password and salt and into the students table.
+     *  @param student The object to be added to the data source
+     *  @param pass
+     *  @param salt
+     *  @return The object that was added or null if the object was unable to be added
+     */
+    @Override
+    public Student create (Student student, String pass) {
+        // Check if user is already in the database
+        if (doesUserExist(student.getUsername())) {
+            System.out.println("User already exists!");
+            return null;
+        }
+
+        byte[] salt = Encryption.generateSalt();
+        pass = Encryption.generateEncryptedPassword(pass, salt);
+
+        // Inserts into the users table and then the students table.
+        String query = "WITH insert_user AS ( " +
+            "INSERT INTO users(first_name, last_name, username, email, usertype, password, salt) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?) " +
+            "RETURNING user_id " +
+            ")" +
+            "INSERT INTO students (user_id, major, gpa) " +
+            "SELECT user_id, ?, ? FROM insert_user " +
+            "RETURNING user_id;";
+
+        PreparedStatement preparedStatement = null;
+        try (Connection conn = connUtil.openConnection()) {
+
+            // Prepare the statement for execution by filling user object fields
+            preparedStatement = conn.prepareStatement(query);
+            preparedStatement.setString(1, student.getFirstName());
+            preparedStatement.setString(2, student.getLastName());
+            preparedStatement.setString(3, student.getUsername());
+            preparedStatement.setString(4, student.getEmail());
+            preparedStatement.setString(5, student.getUserType().toString());
+            preparedStatement.setString(6, pass);
+            preparedStatement.setBytes(7, salt);
+            preparedStatement.setString(8, student.getMajor());
+            preparedStatement.setFloat(9, student.getGpa());
+
+            // Execute statement
+            ResultSet result = preparedStatement.executeQuery();
+            if (result.next()) {
+                int id = result.getInt("user_id");
+                return new Student(id, student.getFirstName(), student.getLastName(), student.getUsername(), student.getEmail(), student.getMajor(), student.getGpa());
+            }
+            return student;
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            closeQuietly(preparedStatement);
+        }
+        return null;
+    }
+
+    /** Inserts a Faculty Member into the table users with password and salt and the table faculty.
+     *  @param facultyMember The object to be added to the data source
+     *  @param pass
+     *  @param salt
+     *  @return The object that was added or null if the object was unable to be added
+     */
+    @Override
+    public FacultyMember create (FacultyMember facultyMember, String pass) {
+        // Check if user is already in the database
+        if (doesUserExist(facultyMember.getUsername())) {
+            System.out.println("User already exists!");
+            return null;
+        }
+
+        byte[] salt = Encryption.generateSalt();
+        pass = Encryption.generateEncryptedPassword(pass, salt);
+
+        // Inserts into the users table and then the faculty table.
+        String query = "WITH insert_user AS (" +
+            "INSERT INTO users(first_name, last_name, username, email, usertype, password, salt) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?) " +
+            "RETURNING user_id " +
+            ") " +
+            "INSERT INTO faculty (user_id, department) " +
+            "SELECT user_id, ? FROM insert_user " +
+            "RETURNING user_id;";
+
+        PreparedStatement preparedStatement = null;
+        try (Connection conn = connUtil.openConnection()) {
+
+            // Prepare the statement for execution by filling user object fields
+            preparedStatement = conn.prepareStatement(query);
+            preparedStatement.setString(1, facultyMember.getFirstName());
+            preparedStatement.setString(2, facultyMember.getLastName());
+            preparedStatement.setString(3, facultyMember.getUsername());
+            preparedStatement.setString(4, facultyMember.getEmail());
+            preparedStatement.setString(5, facultyMember.getUserType().toString());
+            preparedStatement.setString(6, pass);
+            preparedStatement.setBytes(7, salt);
+            preparedStatement.setString(8, facultyMember.getDepartment());
+
+            // Execute statement
+            ResultSet result = preparedStatement.executeQuery();
+            if (result.next()) {
+                int id = result.getInt ("user_id");
+                return new FacultyMember(id, facultyMember.getFirstName(), facultyMember.getLastName(), facultyMember.getUsername(), facultyMember.getEmail(), facultyMember.getDepartment());
+            }
+            return null;
         }
         catch (SQLException e) {
             e.printStackTrace();
@@ -118,6 +255,8 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         String query = "SELECT * FROM users WHERE user_id=?";
         PreparedStatement preparedStatement = null;
         ResultSet result = null;
+        PreparedStatement preparedUserStatement = null;
+        ResultSet userResult = null;
         try (Connection conn = connUtil.openConnection()) {
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setInt(1, user_id);
@@ -128,11 +267,35 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
                 String username = result.getString("username");
                 String email = result.getString("email");
                 String usertype = result.getString("usertype");
+
                 if (usertype.equals("STUDENT")) {
-                    user = new Student (user_id, firstname, lastname, username, email);
+                    query = "SELECT * FROM students WHERE user_id=?";
+                    preparedUserStatement = conn.prepareStatement(query);
+                    preparedUserStatement.setInt(1, user_id);
+                    userResult = preparedUserStatement.executeQuery();
+                    if (userResult.next()) {
+                        String major = userResult.getString("major");
+                        Float gpa = userResult.getFloat("gpa");
+                        user = new Student (user_id, firstname, lastname, username, email, major, gpa);
+                    }
+                    else {
+                        System.out.println("Could not find student!");
+                    }
+                    
                 }
-                if (usertype.equals("FACULTY")) {
-                    user = new FacultyMember (user_id, firstname, lastname, username, email);
+                else if (usertype.equals("FACULTY")) {
+                    query = "SELECT * FROM faculty WHERE user_id=?";
+                    preparedUserStatement = conn.prepareStatement(query);
+                    preparedUserStatement.setInt(1, user_id);
+                    userResult = preparedUserStatement.executeQuery();
+                    
+                    if (userResult.next()) {
+                        String department = userResult.getString("department");
+                        user = new FacultyMember (user_id, firstname, lastname, username, email, department);
+                    }
+                    else {
+                        System.out.println("Could not find faculty!");
+                    }
                 }
 
                 System.out.println("RETURNING " + user);
@@ -148,7 +311,9 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         }
         finally {
             closeQuietly(preparedStatement);
+            closeQuietly(preparedUserStatement);
             closeQuietly(result);
+            closeQuietly(userResult);
         }
         return user;
     }
@@ -163,6 +328,8 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         String query = "SELECT * FROM users WHERE username=?";
         PreparedStatement preparedStatement = null;
         ResultSet result = null;
+        PreparedStatement preparedUserStatement = null;
+        ResultSet userResult = null;
         try (Connection conn = connUtil.openConnection()) {
             preparedStatement = conn.prepareStatement(query);
             preparedStatement.setString(1, username);
@@ -173,11 +340,35 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
                 String lastname = result.getString("last_name");
                 String email = result.getString("email");
                 String usertype = result.getString("usertype");
+
                 if (usertype.equals("STUDENT")) {
-                    user = new Student (user_id, firstname, lastname, username, email);
+                    query = "SELECT * FROM students WHERE user_id=?";
+                    preparedUserStatement = conn.prepareStatement(query);
+                    preparedUserStatement.setInt(1, user_id);
+                    userResult = preparedUserStatement.executeQuery();
+                    if (userResult.next()) {
+                        String major = userResult.getString("major");
+                        Float gpa = userResult.getFloat("gpa");
+                        user = new Student (user_id, firstname, lastname, username, email, major, gpa);
+                    }
+                    else {
+                        System.out.println("Could not find student!");
+                    }
+                    
                 }
-                if (usertype.equals("FACULTY")) {
-                    user = new FacultyMember (user_id, firstname, lastname, username, email);
+                else if (usertype.equals("FACULTY")) {
+                    query = "SELECT * FROM faculty WHERE user_id=?";
+                    preparedUserStatement = conn.prepareStatement(query);
+                    preparedUserStatement.setInt(1, user_id);
+                    userResult = preparedUserStatement.executeQuery();
+                    
+                    if (userResult.next()) {
+                        String department = userResult.getString("department");
+                        user = new FacultyMember (user_id, firstname, lastname, username, email, department);
+                    }
+                    else {
+                        System.out.println("Could not find faculty!");
+                    }
                 }
 
                 System.out.println("RETURNING " + user);
@@ -193,7 +384,9 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         }
         finally {
             closeQuietly(preparedStatement);
+            closeQuietly(preparedUserStatement);
             closeQuietly(result);
+            closeQuietly(userResult);
         }
         return user;
     }
@@ -203,30 +396,50 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
      */
     @Override
     public List<User> findAll() {
-        String sqlQuery = "SELECT * FROM users";
+        String query = "SELECT * FROM users";
         Statement statement = null;
         ResultSet result = null;
+        PreparedStatement preparedUserStatement = null;
+        ResultSet userResult = null;
         try (Connection conn = connUtil.openConnection()) {
             statement = conn.createStatement();
-            result = statement.executeQuery(sqlQuery);
+            result = statement.executeQuery(query);
             List<User> allUsers = new LinkedList<User>();
             while (result.next()) {
                 // Convert result into User object
-                int id = result.getInt ("user_id");
-                String firstName = result.getString("first_name");
-                String lastName = result.getString("last_name");
+                int user_id = result.getInt ("user_id");
+                String firstname = result.getString("first_name");
+                String lastname = result.getString("last_name");
                 String username = result.getString("username");
                 String email = result.getString("email");
                 String usertype = result.getString ("usertype");
 
-                switch (usertype) {
-                    case "STUDENT":
-                    allUsers.add(new Student(id, firstName, lastName, username, email));
-                    break;
+                if (usertype.equals("STUDENT")) {
+                    query = "SELECT * FROM students WHERE user_id=?";
+                    preparedUserStatement = conn.prepareStatement(query);
+                    preparedUserStatement.setInt(1, user_id);
+                    userResult = preparedUserStatement.executeQuery();
+
+                    if (userResult.next()) {
+                        String major = userResult.getString("major");
+                        Float gpa = userResult.getFloat("gpa");
+                        allUsers.add(new Student (user_id, firstname, lastname, username, email, major, gpa));
+                    }
                     
-                    case "FACULTY":
-                    allUsers.add(new FacultyMember(id, firstName, lastName, username, email));
-                    break;
+                }
+                else if (usertype.equals("FACULTY")) {
+                    query = "SELECT * FROM faculty WHERE user_id=?";
+                    preparedUserStatement = conn.prepareStatement(query);
+                    preparedUserStatement.setInt(1, user_id);
+                    userResult = preparedUserStatement.executeQuery();
+                    
+                    if (userResult.next()) {
+                        String department = userResult.getString("department");
+                        allUsers.add(new FacultyMember (user_id, firstname, lastname, username, email, department));
+                    }
+                    else {
+                        System.out.println("Could not find faculty!");
+                    }
                 }
             }
             return allUsers;
@@ -236,7 +449,9 @@ public class UserPostgres extends DatabaseUtils implements UserDAO {
         }
         finally {
             closeQuietly (statement);
+            closeQuietly (preparedUserStatement);
             closeQuietly (result);
+            closeQuietly (userResult);
         }
         return null;
     }

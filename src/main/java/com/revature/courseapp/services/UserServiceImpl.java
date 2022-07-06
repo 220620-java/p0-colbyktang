@@ -1,5 +1,6 @@
 package com.revature.courseapp.services;
 
+import java.io.Console;
 import java.util.Scanner;
 
 import com.revature.courseapp.CourseAppDriver;
@@ -7,16 +8,17 @@ import com.revature.courseapp.data.CourseDAO;
 import com.revature.courseapp.data.CoursePostgres;
 import com.revature.courseapp.data.UserDAO;
 import com.revature.courseapp.data.UserPostgres;
+import com.revature.courseapp.exceptions.UserAlreadyExistsException;
 import com.revature.courseapp.models.Course;
+import com.revature.courseapp.models.User;
 import com.revature.courseapp.models.Student;
-import com.revature.courseapp.utils.Encryption;
 import com.revature.courseapp.utils.List;
+import com.revature.courseapp.utils.Validation;
 
 
 public class UserServiceImpl implements UserService {
     private UserDAO userDAO = new UserPostgres();
     private CourseDAO courseDAO = new CoursePostgres();
-
     
     /** Logins in the user by first checking the password
      * @param username
@@ -24,18 +26,19 @@ public class UserServiceImpl implements UserService {
      * @return boolean
      */
     @Override
-    public boolean userLogin (String username, String password) {
+    public User userLogin (String username, String password) {
         // Check user from the database
         boolean isPasswordValid = userDAO.validatePassword(username, password);
         if (isPasswordValid) {
-            CourseAppDriver.setLoggedUser(userDAO.findByUsername(username));
+            return userDAO.findByUsername(username);
         }
-        else {
-            System.out.println("Password is not correct!");
-        }
-        return isPasswordValid;
+        System.out.println("Password is not correct!");
+        return null;
     }
 
+    /**
+     * Views available classes a student can register for.
+     */
     @Override
     public void studentViewAvailableClasses () {
         System.out.println("Viewing Available Classes...");
@@ -142,7 +145,20 @@ public class UserServiceImpl implements UserService {
         input = scanner.nextLine();
         int capacity = Integer.parseInt(input);
 
-        Course course = new Course (course_id, course_name, semester, capacity);
+        boolean isValid = false;
+        boolean isAvailable = false;
+        do {
+            System.out.print("Is course available (Y/N): ");
+            input = scanner.nextLine();
+            isValid = Validation.isAvailableValid(input);
+            if (!isValid) { System.out.println("Input not valid!");}
+            else { 
+                if (input.toUpperCase() == "Y") isAvailable = true;
+                else { isAvailable = false;}
+            }
+        } while (!isValid);
+
+        Course course = new Course (course_id, course_name, semester, capacity, isAvailable);
         System.out.println("Adding new course " + course_id + "...");
         courseDAO.create(course);
     }
@@ -184,18 +200,123 @@ public class UserServiceImpl implements UserService {
     public static void printDividerLine () {
         System.out.println("---------------------------");
     }
-
     
-    /** 
-     * @param student
-     * @param password
+    /** Generates a salt and an encrypted password to register the student.
      */
     @Override
-    public void registerStudent(Student student, String password) {
+    public Student registerStudent() throws UserAlreadyExistsException {
+        Scanner scanner = CourseAppDriver.getScanner();
+        System.out.println(
+            "Registering as a new student..."
+        );
+
+        String firstName = "";
+        do {
+            
+            System.out.print ("Enter your first name: ");
+            firstName = scanner.nextLine();
+        } while (firstName == "");
+
+        String lastName = "";
+        do {
+            System.out.print ("Enter your last name: ");
+            lastName = scanner.nextLine();
+        } while (lastName == "");
+        
+        String username = "";
+        boolean isUsernameValid = false;
+        do {
+            System.out.println("Username (5-30 characters, start with a letter)");
+            System.out.print ("Enter your username: ");
+            username = scanner.nextLine();
+            isUsernameValid = Validation.isUsernameValid(username);
+            if (!isUsernameValid) {
+                System.out.println("Username is not valid!");
+            }
+        } while (!isUsernameValid);
+
+        String email = "";
+        boolean isEmailValid = false;
+        do {
+            System.out.print ("Enter your email: ");
+            email = scanner.nextLine();
+            isEmailValid = Validation.isEmailValid(email);
+            if (!isEmailValid) {
+                System.out.println("Email is not in valid form: xxx@xxx.com");
+            }
+        } while (!isEmailValid);
+
+        String major = "";
+        boolean isMajorValid = false;
+        do {
+            System.out.print ("Enter your major: ");
+            major = scanner.nextLine();
+            isMajorValid = Validation.isMajorValid(major);
+            if (!isMajorValid) {
+                System.out.println("Major is not long enough or does not start with a letter!");
+            }
+        } while (!isMajorValid);
+
+        Console console = System.console();
+        String password;
+        String verifyPassword;
+        boolean isPasswordValid = false;
+        do {
+            do {
+                System.out.println("Password (4-32 characters)");
+                password = new String (console.readPassword("Enter your password: "));
+                isPasswordValid = Validation.isPasswordValid(password);
+                if (!isPasswordValid) {
+                    System.out.println("Password is not valid!");
+                }
+            } while (!isPasswordValid);
+
+            verifyPassword = new String (console.readPassword("Enter your password again: "));
+
+            if (!password.equals(verifyPassword)) {
+                System.out.println("Passwords do not match");
+            }
+        } while (!password.equals(verifyPassword));
+
+        System.out.println("Passwords match!");
+        
         // Add student to the database
-        byte[] salt = Encryption.generateSalt();
-        String pass = Encryption.generateEncryptedPassword(password, salt);
-        userDAO.create(student, pass, salt);
-        System.out.println(String.format ("Created student %s %s. ID: %d", student.getFirstName(), student.getLastName(), student.getId()));
+        Student student = new Student(firstName, lastName, username, email, major, 3.0f);
+        try {
+            // Add student to the database
+            Student returnedStudent = userDAO.create(student, password);
+            if (returnedStudent == null) {
+                throw new UserAlreadyExistsException();
+            }
+            System.out.println(String.format ("Created student %s %s. ID: %d", student.getFirstName(), student.getLastName(), student.getId()));
+            return returnedStudent;
+        }
+        catch (UserAlreadyExistsException e) {
+            e.printStackTrace();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void studentViewProfile (Student student) {
+        printDividerLine();
+        System.out.println("Viewing student profile...");
+        String nameString = String.format ("Name: %s, %s", student.getLastName(), student.getFirstName());
+        System.out.println(nameString);
+        String majorString = String.format ("Major: %s", student.getMajor());
+        System.out.println(majorString);
+        String emailString = String.format ("Email: %s", student.getEmail());
+        System.out.println(emailString);
+        String gpaString = String.format ("GPA: %f", student.getGpa());
+        System.out.println(gpaString);
+        
+    }
+
+    public Student studentChangeProfile (Student student) {
+        Student newStudent = student;
+        
+        return newStudent;
     }
 }

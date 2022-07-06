@@ -53,13 +53,12 @@ public abstract class DatabaseUtils {
      * @param tableName
      */
     public static void truncateTable (String tableName) {
-        PreparedStatement preparedStatement = null;
-        try (Connection conn = ConnectionUtil.getConnectionUtil().openConnection()) {
-            String truncateSQLQuery = String.format ("Truncate table ? CASCADE");
-            preparedStatement = conn.prepareStatement(truncateSQLQuery);
-            preparedStatement.setString(1, tableName);
-            preparedStatement.execute(truncateSQLQuery);
-            preparedStatement.close();
+        Statement statement = null;
+        ConnectionUtil connUtil = ConnectionUtil.getConnectionUtil();
+        try (Connection conn = connUtil.openConnection()) {
+            String query = "truncate " + tableName + " restart identity CASCADE;";
+            statement = conn.createStatement();
+            statement.executeUpdate(query);
         }
         catch (SQLException e) {
             e.printStackTrace();
@@ -70,7 +69,7 @@ public abstract class DatabaseUtils {
             return;
         }
         finally {
-            closeQuietly(preparedStatement);
+            closeQuietly(statement);
         }
         System.out.println(String.format ("%s Table truncated.", tableName));
     }

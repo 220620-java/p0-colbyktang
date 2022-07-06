@@ -5,10 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito.*;
 
 public class UserTest {
-    
     @AfterEach
     public void resetNextStudentID () {
         User.resetNextID();
@@ -20,7 +18,9 @@ public class UserTest {
             "John", 
             "Smith", 
             "jsmith", 
-            "jsmith@email.com"
+            "jsmith@email.com",
+            "Comp Sci", 
+            3.0f
         );
         
         
@@ -38,7 +38,9 @@ public class UserTest {
             "John", 
             "Smith", 
             "jsmith", 
-            "jsmith@email.com"
+            "jsmith@email.com",
+            "Comp Sci", 
+            3.0f
         );
         
         String expected = "StudentID: = 101, First Name = John, Last Name = Smith, Username = jsmith, Email = jsmith@email.com";
@@ -54,14 +56,18 @@ public class UserTest {
             "John", 
             "Smith", 
             "jsmith", 
-            "jsmith@email.com"
+            "jsmith@email.com",
+            "Comp Sci", 
+            3.0f
         );
 
         Student student2 = new Student(101,
             "John", 
             "Smith", 
             "jsmith", 
-            "jsmith@email.com"
+            "jsmith@email.com",
+            "Comp Sci", 
+            3.0f
         );
         assertTrue(student.hashCode() == student2.hashCode());
     }
@@ -72,7 +78,8 @@ public class UserTest {
             "Joe", 
             "Shmoe", 
             "jshmoe", 
-            "jshmoe@email.com"
+            "jshmoe@email.com",
+            "Comp Sci"
         );
         
         String expected = "FacultyID: = 101, First Name = Joe, Last Name = Shmoe, Username = jshmoe, Email = jshmoe@email.com";

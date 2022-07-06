@@ -1,14 +1,34 @@
 package com.revature.courseapp.data;
 
+import com.revature.courseapp.models.FacultyMember;
+import com.revature.courseapp.models.Student;
 import com.revature.courseapp.models.User;
 
 public interface UserDAO extends DataAccessObject<User> {
 
     /** Inserts a user into the table users with password and salt.
-     *  @param User The object to be added to the data source
+     *  @param user The object to be added to the data source
+     *  @param pass
+     *  @param salt
      *  @return The object that was added or null if the object was unable to be added
      */
-    public User create(User user, String pass, byte[] salt);
+    public User create(User user, String pass);
+
+    /** Inserts a Student into the table users with password and salt and into the students table.
+     *  @param student The object to be added to the data source
+     *  @param pass
+     *  @param salt
+     *  @return The object that was added or null if the object was unable to be added
+     */
+    public Student create (Student student, String pass);
+
+    /** Inserts a Faculty Member into the table users with password and salt and the table faculty.
+     *  @param facultyMember The object to be added to the data source
+     *  @param pass
+     *  @param salt
+     *  @return The object that was added or null if the object was unable to be added
+     */
+    public FacultyMember create (FacultyMember facultyMember, String pass);
 
     /** Retrieves the user from the database using a username
      * @param username
