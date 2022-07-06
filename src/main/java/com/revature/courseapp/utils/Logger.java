@@ -51,9 +51,15 @@ public class Logger {
 
     public static boolean logMessage (String content) {
         try {
-            String filename = "exceptions.log";
+            String filename = "messages.log";
+            File fileObj = new File ("src/main/resources/logs/" + filename);
+            if (!fileObj.exists()) {
+                createFile(filename);
+            }
             FileWriter fileWriter = new FileWriter("src/main/resources/logs/" + filename);
+            fileWriter.write ("\n");
             fileWriter.write (content);
+            fileWriter.write ("\n");
             fileWriter.close();
             System.out.println("Writing to " + path + " " + filename + " Successful!");
             return true;

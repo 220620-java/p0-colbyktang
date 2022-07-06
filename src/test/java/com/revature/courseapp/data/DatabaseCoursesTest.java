@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
@@ -16,12 +17,14 @@ public class DatabaseCoursesTest {
     static ConnectionUtil db;
 
 
+    @Disabled
     @BeforeAll
     public static void OpenDatabase () {
         db = ConnectionUtil.getConnectionUtil("local_db.json");
         courseDAO = new CoursePostgres();
     }
 
+    @Disabled
     @Test
     void testGetCourse() {
         Course course = new Course (101, "Introduction to Computer Science", "FALL 2022", 30, true);
@@ -33,6 +36,7 @@ public class DatabaseCoursesTest {
 
     }
 
+    @Disabled
     @Test
     void testDoesCourseExist() {
         Course course = new Course (101, "Introduction to Computer Science", "FALL 2022", 30, true);
@@ -48,6 +52,7 @@ public class DatabaseCoursesTest {
         
     }
 
+    @Disabled
     @Test
     void testGetAllEnrolledCourses() {
         List<Course> courses101 = courseDAO.getAllEnrolledCourses(101);
@@ -63,12 +68,14 @@ public class DatabaseCoursesTest {
 
     }
 
+    @Disabled
     @Test
     void testInsertCourse() {
         Course course = new Course (101, "TEST COURSE", "SPRING 2023", 5, true);
         // insertCourse (course);
     }
 
+    @Disabled
     @Test
     void testRemoveCourse() {
 
