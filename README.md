@@ -1,4 +1,6 @@
 # Project 0: Course Registration Application
+A basic console application for managing students and course registration. Designed to be used by both students and faculty.
+
 ## Description
 A console-based course registration application that will allow students and faculty members to manage courses.
 
