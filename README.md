@@ -2,7 +2,7 @@
 A basic console application for managing students and course registration. Designed to be used by both students and faculty.
 
 ## Description
-A console-based course registration application that will allow students and faculty members to manage courses.
+A console-based course registration application that will allow students to register/withdraw courses and faculty members to manage courses.
 
 Students will be able to register a new account, view classes available for registration, register for classes, cancel class registrations, and view enrolled classes.
 
